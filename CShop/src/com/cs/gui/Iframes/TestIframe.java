@@ -28,24 +28,34 @@ public class TestIframe extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         jButton1 = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
 
         setClosable(true);
 
         jButton1.setText("jButton1");
 
+        jLabel1.setText("jLabel1");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(284, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addGap(37, 37, 37))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(202, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(37, 37, 37))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(158, 158, 158))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(161, Short.MAX_VALUE)
+                .addContainerGap(89, Short.MAX_VALUE)
+                .addComponent(jLabel1)
+                .addGap(62, 62, 62)
                 .addComponent(jButton1)
                 .addGap(94, 94, 94))
         );
@@ -56,5 +66,6 @@ public class TestIframe extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
