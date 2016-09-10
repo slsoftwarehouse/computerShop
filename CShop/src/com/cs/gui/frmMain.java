@@ -5,7 +5,6 @@
  */
 package com.cs.gui;
 
-import com.cs.gui.Iframes.FSupplier;
 import com.cs.gui.Iframes.TestIframe;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
@@ -39,14 +38,10 @@ public class frmMain extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jMenuItem1 = new javax.swing.JMenuItem();
         mainDesktopPane = new javax.swing.JDesktopPane();
         mnuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuIProducts = new javax.swing.JMenuItem();
-        jMenuItem2 = new javax.swing.JMenuItem();
-
-        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Print Shop");
@@ -75,14 +70,6 @@ public class frmMain extends javax.swing.JFrame {
         });
         mnuFile.add(mnuIProducts);
 
-        jMenuItem2.setText("Suppliers");
-        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem2ActionPerformed(evt);
-            }
-        });
-        mnuFile.add(jMenuItem2);
-
         mnuBar.add(mnuFile);
 
         setJMenuBar(mnuBar);
@@ -106,10 +93,6 @@ public class frmMain extends javax.swing.JFrame {
     private void mnuIProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIProductsActionPerformed
         showIFrame(new TestIframe());
     }//GEN-LAST:event_mnuIProductsActionPerformed
-
-    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
-        showIFrame(new FSupplier());
-    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -188,8 +171,6 @@ public class frmMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JMenuItem jMenuItem2;
     public static javax.swing.JDesktopPane mainDesktopPane;
     private javax.swing.JMenuBar mnuBar;
     private javax.swing.JMenu mnuFile;
