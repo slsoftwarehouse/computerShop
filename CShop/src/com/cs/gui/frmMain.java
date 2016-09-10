@@ -5,7 +5,9 @@
  */
 package com.cs.gui;
 
-import com.cs.gui.Iframes.TestIframe;
+
+import com.cs.gui.Iframes.frmICustomer;
+import com.cs.gui.Iframes.frmIProduct;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
@@ -42,6 +44,7 @@ public class frmMain extends javax.swing.JFrame {
         mnuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuIProducts = new javax.swing.JMenuItem();
+        mnuICustomer = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Print Shop");
@@ -70,6 +73,14 @@ public class frmMain extends javax.swing.JFrame {
         });
         mnuFile.add(mnuIProducts);
 
+        mnuICustomer.setText("Customer");
+        mnuICustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuICustomerActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuICustomer);
+
         mnuBar.add(mnuFile);
 
         setJMenuBar(mnuBar);
@@ -91,8 +102,12 @@ public class frmMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void mnuIProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIProductsActionPerformed
-        showIFrame(new TestIframe());
+        showIFrame(new frmIProduct());
     }//GEN-LAST:event_mnuIProductsActionPerformed
+
+    private void mnuICustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuICustomerActionPerformed
+        showIFrame(new frmICustomer());
+    }//GEN-LAST:event_mnuICustomerActionPerformed
 
     /**
      * @param args the command line arguments
@@ -174,6 +189,7 @@ public class frmMain extends javax.swing.JFrame {
     public static javax.swing.JDesktopPane mainDesktopPane;
     private javax.swing.JMenuBar mnuBar;
     private javax.swing.JMenu mnuFile;
+    private javax.swing.JMenuItem mnuICustomer;
     private javax.swing.JMenuItem mnuIProducts;
     // End of variables declaration//GEN-END:variables
 }
