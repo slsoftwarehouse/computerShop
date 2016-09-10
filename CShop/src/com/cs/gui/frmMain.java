@@ -7,7 +7,12 @@ package com.cs.gui;
 
 
 import com.cs.gui.Iframes.frmICustomer;
+import com.cs.gui.Iframes.frmIPaymentMethods;
 import com.cs.gui.Iframes.frmIProduct;
+import com.cs.gui.Iframes.frmIProductCatagory;
+import com.cs.gui.Iframes.frmIRole;
+import com.cs.gui.Iframes.frmIUsers;
+import com.cs.gui.Iframes.frmIInvoice;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
@@ -45,6 +50,11 @@ public class frmMain extends javax.swing.JFrame {
         mnuFile = new javax.swing.JMenu();
         mnuIProducts = new javax.swing.JMenuItem();
         mnuICustomer = new javax.swing.JMenuItem();
+        mnuIPaymentMethod = new javax.swing.JMenuItem();
+        mnuIProductCatagory = new javax.swing.JMenuItem();
+        mnuIRoles = new javax.swing.JMenuItem();
+        mnuIUsers = new javax.swing.JMenuItem();
+        mnuIInvoice = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Print Shop");
@@ -81,6 +91,46 @@ public class frmMain extends javax.swing.JFrame {
         });
         mnuFile.add(mnuICustomer);
 
+        mnuIPaymentMethod.setText("Payment Methods");
+        mnuIPaymentMethod.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuIPaymentMethodActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuIPaymentMethod);
+
+        mnuIProductCatagory.setText("Product Catagory");
+        mnuIProductCatagory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuIProductCatagoryActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuIProductCatagory);
+
+        mnuIRoles.setText("Roles");
+        mnuIRoles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuIRolesActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuIRoles);
+
+        mnuIUsers.setText("Users");
+        mnuIUsers.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuIUsersActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuIUsers);
+
+        mnuIInvoice.setText("Invoice");
+        mnuIInvoice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuIInvoiceActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuIInvoice);
+
         mnuBar.add(mnuFile);
 
         setJMenuBar(mnuBar);
@@ -108,6 +158,26 @@ public class frmMain extends javax.swing.JFrame {
     private void mnuICustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuICustomerActionPerformed
         showIFrame(new frmICustomer());
     }//GEN-LAST:event_mnuICustomerActionPerformed
+
+    private void mnuIProductCatagoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIProductCatagoryActionPerformed
+        showIFrame(new frmIProductCatagory());
+    }//GEN-LAST:event_mnuIProductCatagoryActionPerformed
+
+    private void mnuIPaymentMethodActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIPaymentMethodActionPerformed
+        showIFrame(new frmIPaymentMethods());
+    }//GEN-LAST:event_mnuIPaymentMethodActionPerformed
+
+    private void mnuIRolesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIRolesActionPerformed
+       showIFrame(new frmIRole());
+    }//GEN-LAST:event_mnuIRolesActionPerformed
+
+    private void mnuIUsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIUsersActionPerformed
+        showIFrame(new frmIUsers());
+    }//GEN-LAST:event_mnuIUsersActionPerformed
+
+    private void mnuIInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIInvoiceActionPerformed
+        showIFrame(new frmIInvoice());
+    }//GEN-LAST:event_mnuIInvoiceActionPerformed
 
     /**
      * @param args the command line arguments
@@ -190,6 +260,11 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JMenuBar mnuBar;
     private javax.swing.JMenu mnuFile;
     private javax.swing.JMenuItem mnuICustomer;
+    private javax.swing.JMenuItem mnuIInvoice;
+    private javax.swing.JMenuItem mnuIPaymentMethod;
+    private javax.swing.JMenuItem mnuIProductCatagory;
     private javax.swing.JMenuItem mnuIProducts;
+    private javax.swing.JMenuItem mnuIRoles;
+    private javax.swing.JMenuItem mnuIUsers;
     // End of variables declaration//GEN-END:variables
 }
