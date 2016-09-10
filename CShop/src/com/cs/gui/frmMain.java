@@ -11,11 +11,14 @@ import com.cs.gui.Iframes.frmIInvoice;
 import com.cs.gui.Iframes.frmIProduct;
 import com.cs.gui.Iframes.frmIProductCatagory;
 import com.cs.gui.Iframes.frmIRole;
+import com.cs.gui.Iframes.frmISupplier;
 import com.cs.gui.Iframes.frmIUsers;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import javax.swing.JInternalFrame;
 
@@ -25,7 +28,7 @@ import javax.swing.JInternalFrame;
  * @author home
  */
 public class frmMain extends javax.swing.JFrame {
-
+    public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("whole_salePU");
    
     /**
      * Creates new form frmMain
@@ -53,6 +56,7 @@ public class frmMain extends javax.swing.JFrame {
         mnuIRoles = new javax.swing.JMenuItem();
         mnuIProductCategory = new javax.swing.JMenuItem();
         mnuiInvoice = new javax.swing.JMenuItem();
+        mnuISuppluer = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Print Shop");
@@ -121,6 +125,14 @@ public class frmMain extends javax.swing.JFrame {
         });
         mnuFile.add(mnuiInvoice);
 
+        mnuISuppluer.setText("Supplier");
+        mnuISuppluer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuISuppluerActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuISuppluer);
+
         mnuBar.add(mnuFile);
 
         setJMenuBar(mnuBar);
@@ -164,6 +176,10 @@ public class frmMain extends javax.swing.JFrame {
     private void mnuIUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIUserActionPerformed
          showIFrame(new frmIUsers());
     }//GEN-LAST:event_mnuIUserActionPerformed
+
+    private void mnuISuppluerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuISuppluerActionPerformed
+        showIFrame(new frmISupplier());
+    }//GEN-LAST:event_mnuISuppluerActionPerformed
 
     /**
      * @param args the command line arguments
@@ -249,6 +265,7 @@ public class frmMain extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuIProductCategory;
     private javax.swing.JMenuItem mnuIProducts;
     private javax.swing.JMenuItem mnuIRoles;
+    private javax.swing.JMenuItem mnuISuppluer;
     private javax.swing.JMenuItem mnuIUser;
     private javax.swing.JMenuItem mnuiInvoice;
     // End of variables declaration//GEN-END:variables
