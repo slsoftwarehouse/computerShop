@@ -5,7 +5,13 @@
  */
 package com.cs.gui;
 
-import com.cs.gui.Iframes.TestIframe;
+
+import com.cs.gui.Iframes.frmICustomer;
+import com.cs.gui.Iframes.frmIInvoice;
+import com.cs.gui.Iframes.frmIProduct;
+import com.cs.gui.Iframes.frmIProductCatagory;
+import com.cs.gui.Iframes.frmIRole;
+import com.cs.gui.Iframes.frmIUsers;
 import java.awt.Dimension;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
@@ -42,6 +48,11 @@ public class frmMain extends javax.swing.JFrame {
         mnuBar = new javax.swing.JMenuBar();
         mnuFile = new javax.swing.JMenu();
         mnuIProducts = new javax.swing.JMenuItem();
+        mnuICustomer = new javax.swing.JMenuItem();
+        mnuIUser = new javax.swing.JMenuItem();
+        mnuIRoles = new javax.swing.JMenuItem();
+        mnuIProductCategory = new javax.swing.JMenuItem();
+        mnuiInvoice = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Print Shop");
@@ -70,6 +81,46 @@ public class frmMain extends javax.swing.JFrame {
         });
         mnuFile.add(mnuIProducts);
 
+        mnuICustomer.setText("Customers");
+        mnuICustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuICustomerActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuICustomer);
+
+        mnuIUser.setText("Users");
+        mnuIUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuIUserActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuIUser);
+
+        mnuIRoles.setText("Roles");
+        mnuIRoles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuIRolesActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuIRoles);
+
+        mnuIProductCategory.setText("Product Category");
+        mnuIProductCategory.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuIProductCategoryActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuIProductCategory);
+
+        mnuiInvoice.setText("Invoice");
+        mnuiInvoice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuiInvoiceActionPerformed(evt);
+            }
+        });
+        mnuFile.add(mnuiInvoice);
+
         mnuBar.add(mnuFile);
 
         setJMenuBar(mnuBar);
@@ -91,8 +142,28 @@ public class frmMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void mnuIProductsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIProductsActionPerformed
-        showIFrame(new TestIframe());
+        showIFrame(new frmIProduct());
     }//GEN-LAST:event_mnuIProductsActionPerformed
+
+    private void mnuICustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuICustomerActionPerformed
+        showIFrame(new frmICustomer());
+    }//GEN-LAST:event_mnuICustomerActionPerformed
+
+    private void mnuIRolesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIRolesActionPerformed
+        showIFrame(new frmIRole());
+    }//GEN-LAST:event_mnuIRolesActionPerformed
+
+    private void mnuiInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuiInvoiceActionPerformed
+        showIFrame(new frmIInvoice());
+    }//GEN-LAST:event_mnuiInvoiceActionPerformed
+
+    private void mnuIProductCategoryActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIProductCategoryActionPerformed
+         showIFrame(new frmIProductCatagory());
+    }//GEN-LAST:event_mnuIProductCategoryActionPerformed
+
+    private void mnuIUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIUserActionPerformed
+         showIFrame(new frmIUsers());
+    }//GEN-LAST:event_mnuIUserActionPerformed
 
     /**
      * @param args the command line arguments
@@ -174,6 +245,11 @@ public class frmMain extends javax.swing.JFrame {
     public static javax.swing.JDesktopPane mainDesktopPane;
     private javax.swing.JMenuBar mnuBar;
     private javax.swing.JMenu mnuFile;
+    private javax.swing.JMenuItem mnuICustomer;
+    private javax.swing.JMenuItem mnuIProductCategory;
     private javax.swing.JMenuItem mnuIProducts;
+    private javax.swing.JMenuItem mnuIRoles;
+    private javax.swing.JMenuItem mnuIUser;
+    private javax.swing.JMenuItem mnuiInvoice;
     // End of variables declaration//GEN-END:variables
 }
