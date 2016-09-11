@@ -5,19 +5,13 @@
  */
 package com.cs.dao;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-import javax.persistence.Basic;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -29,24 +23,19 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Supplier.findAll", query = "SELECT s FROM Supplier s"),
-    @NamedQuery(name = "Supplier.findBySupplierId", query = "SELECT s FROM Supplier s WHERE s.supplierId = :supplierId"),
+    @NamedQuery(name = "Supplier.findBySupplierId", query = "SELECT s FROM Supplier s WHERE s.supplierPK.supplierId = :supplierId"),
     @NamedQuery(name = "Supplier.findBySupplierName", query = "SELECT s FROM Supplier s WHERE s.supplierName = :supplierName"),
     @NamedQuery(name = "Supplier.findBySupplierAddress", query = "SELECT s FROM Supplier s WHERE s.supplierAddress = :supplierAddress"),
     @NamedQuery(name = "Supplier.findBySupplierMobile", query = "SELECT s FROM Supplier s WHERE s.supplierMobile = :supplierMobile"),
     @NamedQuery(name = "Supplier.findBySupplierPhone1", query = "SELECT s FROM Supplier s WHERE s.supplierPhone1 = :supplierPhone1"),
     @NamedQuery(name = "Supplier.findBySupplierEmail", query = "SELECT s FROM Supplier s WHERE s.supplierEmail = :supplierEmail"),
-    @NamedQuery(name = "Supplier.findBySupplierAccountId", query = "SELECT s FROM Supplier s WHERE s.supplierAccountId = :supplierAccountId")})
+    @NamedQuery(name = "Supplier.findByBranchId", query = "SELECT s FROM Supplier s WHERE s.supplierPK.branchId = :branchId"),
+    @NamedQuery(name = "Supplier.findByUpdatedToServer", query = "SELECT s FROM Supplier s WHERE s.updatedToServer = :updatedToServer")})
 public class Supplier implements Serializable {
 
-    @Transient
-    private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);
-
     private static final long serialVersionUID = 1L;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "supplier_id")
-    private Integer supplierId;
+    @EmbeddedId
+    protected SupplierPK supplierPK;
     @Column(name = "supplier_name")
     private String supplierName;
     @Column(name = "supplier_address")
@@ -57,24 +46,26 @@ public class Supplier implements Serializable {
     private String supplierPhone1;
     @Column(name = "supplier_email")
     private String supplierEmail;
-    @Column(name = "supplier_account_id")
-    private Integer supplierAccountId;
+    @Column(name = "updated_to_server")
+    private Integer updatedToServer;
 
     public Supplier() {
     }
 
-    public Supplier(Integer supplierId) {
-        this.supplierId = supplierId;
+    public Supplier(SupplierPK supplierPK) {
+        this.supplierPK = supplierPK;
     }
 
-    public Integer getSupplierId() {
-        return supplierId;
+    public Supplier(int supplierId, int branchId) {
+        this.supplierPK = new SupplierPK(supplierId, branchId);
     }
 
-    public void setSupplierId(Integer supplierId) {
-        Integer oldSupplierId = this.supplierId;
-        this.supplierId = supplierId;
-        changeSupport.firePropertyChange("supplierId", oldSupplierId, supplierId);
+    public SupplierPK getSupplierPK() {
+        return supplierPK;
+    }
+
+    public void setSupplierPK(SupplierPK supplierPK) {
+        this.supplierPK = supplierPK;
     }
 
     public String getSupplierName() {
@@ -82,9 +73,7 @@ public class Supplier implements Serializable {
     }
 
     public void setSupplierName(String supplierName) {
-        String oldSupplierName = this.supplierName;
         this.supplierName = supplierName;
-        changeSupport.firePropertyChange("supplierName", oldSupplierName, supplierName);
     }
 
     public String getSupplierAddress() {
@@ -92,9 +81,7 @@ public class Supplier implements Serializable {
     }
 
     public void setSupplierAddress(String supplierAddress) {
-        String oldSupplierAddress = this.supplierAddress;
         this.supplierAddress = supplierAddress;
-        changeSupport.firePropertyChange("supplierAddress", oldSupplierAddress, supplierAddress);
     }
 
     public String getSupplierMobile() {
@@ -102,9 +89,7 @@ public class Supplier implements Serializable {
     }
 
     public void setSupplierMobile(String supplierMobile) {
-        String oldSupplierMobile = this.supplierMobile;
         this.supplierMobile = supplierMobile;
-        changeSupport.firePropertyChange("supplierMobile", oldSupplierMobile, supplierMobile);
     }
 
     public String getSupplierPhone1() {
@@ -112,9 +97,7 @@ public class Supplier implements Serializable {
     }
 
     public void setSupplierPhone1(String supplierPhone1) {
-        String oldSupplierPhone1 = this.supplierPhone1;
         this.supplierPhone1 = supplierPhone1;
-        changeSupport.firePropertyChange("supplierPhone1", oldSupplierPhone1, supplierPhone1);
     }
 
     public String getSupplierEmail() {
@@ -122,25 +105,21 @@ public class Supplier implements Serializable {
     }
 
     public void setSupplierEmail(String supplierEmail) {
-        String oldSupplierEmail = this.supplierEmail;
         this.supplierEmail = supplierEmail;
-        changeSupport.firePropertyChange("supplierEmail", oldSupplierEmail, supplierEmail);
     }
 
-    public Integer getSupplierAccountId() {
-        return supplierAccountId;
+    public Integer getUpdatedToServer() {
+        return updatedToServer;
     }
 
-    public void setSupplierAccountId(Integer supplierAccountId) {
-        Integer oldSupplierAccountId = this.supplierAccountId;
-        this.supplierAccountId = supplierAccountId;
-        changeSupport.firePropertyChange("supplierAccountId", oldSupplierAccountId, supplierAccountId);
+    public void setUpdatedToServer(Integer updatedToServer) {
+        this.updatedToServer = updatedToServer;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (supplierId != null ? supplierId.hashCode() : 0);
+        hash += (supplierPK != null ? supplierPK.hashCode() : 0);
         return hash;
     }
 
@@ -151,27 +130,15 @@ public class Supplier implements Serializable {
             return false;
         }
         Supplier other = (Supplier) object;
-//        if ((this.supplierId == null && other.supplierId != null) || (this.supplierId != null && !this.supplierId.equals(other.supplierId))) {
-//            return false;
-//        }
-        if ((this.supplierName.toLowerCase() == null && other.supplierName.toLowerCase() != null) || (this.supplierName.toLowerCase() != null && !this.supplierName.equals(other.supplierName.toLowerCase()))) {
+        if ((this.supplierPK == null && other.supplierPK != null) || (this.supplierPK != null && !this.supplierPK.equals(other.supplierPK))) {
             return false;
         }
-        
         return true;
     }
 
     @Override
     public String toString() {
-        return "com.cs.dao.Supplier[ supplierId=" + supplierId + " ]";
-    }
-
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
-        changeSupport.addPropertyChangeListener(listener);
-    }
-
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
-        changeSupport.removePropertyChangeListener(listener);
+        return "com.cs.dao.Supplier[ supplierPK=" + supplierPK + " ]";
     }
     
 }
