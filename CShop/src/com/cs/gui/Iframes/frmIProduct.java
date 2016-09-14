@@ -5,9 +5,13 @@
  */
 package com.cs.gui.Iframes;
 
-import java.util.Date;
+import com.cs.dao.Product;
+import com.cs.dao.ProductPK;
+import com.cs.gui.frmMain;
+import java.util.ArrayList;
 import java.util.List;
-
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -20,13 +24,82 @@ import javax.swing.table.DefaultTableModel;
  */
 public class frmIProduct extends javax.swing.JInternalFrame {
 
+    private final EntityManager em = frmMain.emf.createEntityManager();
+    private List<Product> prodList = new ArrayList<>();
+    Product selectedProduct;
 
     /**
      * Creates new form frmIProduct
      */
     public frmIProduct() {
         initComponents();
-        
+        Query query = em.createNamedQuery("Product.findAll");
+        prodList = (List<Product>)query.getResultList();
+        loadProductTable(null);
+        tblMain.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                if (!optAdd.isSelected() && tblMain.getSelectedRow() > -1) {
+                    String name = (String) tblMain.getValueAt(tblMain.getSelectedRow(), 1);
+                    selectedProduct = findProduct(name);
+                    txtName.setText(selectedProduct.getProductName());
+                    txtBPrice.setText(selectedProduct.getBprice()+"");
+                    txtSPrice.setText(selectedProduct.getSprice()+"");
+                    txtQTY.setText(selectedProduct.getQty()+"");
+                }
+
+            }
+        });
+
+    }
+    
+    Product findProduct(String name) {
+        for (Product product : prodList) {
+            if (product.getProductName().equals(name)) {
+                return product;
+            }
+        }
+        return null;
+    }
+    
+    void loadProductTable(String name) {
+
+        DefaultTableModel tblModel = (DefaultTableModel) tblMain.getModel();
+        tblModel.setRowCount(0);
+        for (Product prod : prodList) {
+            if (name == null) {
+                tblModel.addRow(new Object[]{prod.getProductPK().getProductId(), prod.getProductName(), prod.getBprice(), prod.getSprice(), prod.getQty() });
+
+            } else if (prod.getProductName().toLowerCase().startsWith(name.toLowerCase())) {
+
+                tblModel.addRow(new Object[]{prod.getProductPK().getProductId(), prod.getProductName(), prod.getBprice(), prod.getSprice(), prod.getQty() });
+            }
+        }
+
+    }
+
+    void enableALl() {
+        txtBPrice.setEnabled(true);
+        txtFindBy.setEnabled(true);
+        txtName.setEnabled(true);
+        txtQTY.setEnabled(true);
+        txtSPrice.setEnabled(true);
+    }
+
+    void desableALl() {
+        txtBPrice.setEnabled(false);
+        txtFindBy.setEnabled(false);
+        txtName.setEnabled(false);
+        txtQTY.setEnabled(false);
+        txtSPrice.setEnabled(false);
+    }
+
+    void clearALl() {
+        txtName.setText("");
+        txtBPrice.setText("");
+        txtFindBy.setText("");
+        txtQTY.setText("");
+        txtSPrice.setText("");
+
     }
 
     /**
@@ -240,24 +313,75 @@ public class frmIProduct extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtFindByActionPerformed
 
     private void optUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optUpdateActionPerformed
-
+        btnSave.setText("Update");
     }//GEN-LAST:event_optUpdateActionPerformed
 
     private void optAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optAddActionPerformed
+        btnSave.setText("Add");
+        clearALl();
     }//GEN-LAST:event_optAddActionPerformed
 
     private void optDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optDeleteActionPerformed
-
+        btnSave.setText("Delete");
     }//GEN-LAST:event_optDeleteActionPerformed
 
     private void txtFindByKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFindByKeyReleased
-
+        loadProductTable(txtFindBy.getText());
     }//GEN-LAST:event_txtFindByKeyReleased
 
     private void tblMainMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMainMouseClicked
     }//GEN-LAST:event_tblMainMouseClicked
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        if (txtName.getText().trim().length() == 0) {
+            JOptionPane.showMessageDialog(this, "You Must Provide A Product Name");
+            return;
+        }
+
+        if (optAdd.isSelected()) {
+            em.getTransaction().begin();
+            Product product = new Product();
+            product.setProductPK(new ProductPK());
+            product.setProductName(txtName.getText());
+            product.setBprice(Double.parseDouble(txtBPrice.getText()));
+            product.setSprice(Double.parseDouble(txtSPrice.getText()));
+            product.setQty(Integer.parseInt(txtQTY.getText()));
+            
+            em.persist(product);
+            em.getTransaction().commit();
+            prodList.add(product);
+            loadProductTable(null);
+            JOptionPane.showMessageDialog(this, "Product Added", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        if (optUpdate.isSelected() && selectedProduct != null) {
+            em.getTransaction().begin();
+
+            selectedProduct.setProductName(txtName.getText());
+            selectedProduct.setBprice(Double.parseDouble(txtBPrice.getText()));
+            selectedProduct.setSprice(Double.parseDouble(txtSPrice.getText()));
+            selectedProduct.setQty(Integer.parseInt(txtQTY.getText()));
+            
+            em.persist(selectedProduct);
+            em.getTransaction().commit();
+            prodList.remove(selectedProduct);
+            prodList.add(selectedProduct);
+            loadProductTable(null);
+            JOptionPane.showMessageDialog(this, "Product Updated", "Success", JOptionPane.INFORMATION_MESSAGE);
+            selectedProduct = null;
+        }
+
+        if (optDelete.isSelected() && selectedProduct != null) {
+            em.getTransaction().begin();
+
+            em.remove(selectedProduct);
+            em.getTransaction().commit();
+            prodList.remove(selectedProduct);
+            loadProductTable(null);
+            JOptionPane.showMessageDialog(this, "Product Deleted", "Success", JOptionPane.INFORMATION_MESSAGE);
+            selectedProduct = null;
+        }
+        clearALl();
     }//GEN-LAST:event_btnSaveActionPerformed
 
 

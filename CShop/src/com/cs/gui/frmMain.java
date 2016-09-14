@@ -28,7 +28,7 @@ import javax.swing.JInternalFrame;
  * @author home
  */
 public class frmMain extends javax.swing.JFrame {
-    public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("whole_salePU");
+    public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("CShopPU");
    
     /**
      * Creates new form frmMain

@@ -6,6 +6,7 @@
 package com.cs.gui.Iframes;
 
 import com.cs.dao.Supplier;
+import com.cs.dao.SupplierPK;
 import com.cs.gui.frmMain;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
                     txtName.setText(selectedSupplier.getSupplierName());
                     txtMobile.setText(selectedSupplier.getSupplierMobile());
                     txtTell.setText(selectedSupplier.getSupplierPhone1());
-                    txtAccountID.setText(selectedSupplier.getSupplierAccountId() + "");
                     txtEmail.setText(selectedSupplier.getSupplierEmail());
                 }
 
@@ -82,8 +82,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
         optUpdate = new javax.swing.JRadioButton();
         jLabel8 = new javax.swing.JLabel();
         txtTell = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        txtAccountID = new javax.swing.JTextField();
 
         setClosable(true);
         setIconifiable(true);
@@ -95,11 +93,11 @@ public class frmISupplier extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "Name", "Address", "Mobile", "E-mail", "Phone", "Account ID"
+                "Name", "Address", "Mobile", "E-mail", "Phone"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -175,8 +173,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
 
         jLabel8.setText("E-Mail");
 
-        jLabel10.setText("Account ID");
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -198,33 +194,32 @@ public class frmISupplier extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtMobile, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(53, 53, 53)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel10)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(6, 6, 6)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel8))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtEmail)
-                            .addComponent(txtTell, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(116, 116, 116)
-                        .addComponent(txtAccountID)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtMobile, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 195, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(53, 53, 53)
+                                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGap(6, 6, 6))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel8))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txtEmail)
+                                    .addComponent(txtTell, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 311, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(17, 17, 17))
         );
         layout.setVerticalGroup(
@@ -241,8 +236,8 @@ public class frmISupplier extends javax.swing.JInternalFrame {
                     .addComponent(txtFindBy, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
@@ -251,23 +246,20 @@ public class frmISupplier extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(txtMobile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3)))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel4)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(txtAccountID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel10))
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(txtTell, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(9, 9, 9)
-                            .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addComponent(jLabel3))
+                        .addGap(9, 9, 9)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel8)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(txtTell, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGap(9, 9, 9)
+                                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                    .addComponent(jScrollPane2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnSave)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(15, Short.MAX_VALUE))
         );
 
         pack();
@@ -292,11 +284,10 @@ public class frmISupplier extends javax.swing.JInternalFrame {
         if (optAdd.isSelected()) {
             em.getTransaction().begin();
             Supplier sup = new Supplier();
-
+            sup.setSupplierPK(new SupplierPK());
             sup.setSupplierAddress(txtAddress.getText().trim());
             sup.setSupplierMobile(txtMobile.getText().trim());
             sup.setSupplierName(txtName.getText().trim());
-            sup.setSupplierAccountId((txtAccountID.getText().length() == 0 ? null : Integer.parseInt(txtAccountID.getText().trim())));
             sup.setSupplierEmail(txtEmail.getText().trim());
             sup.setSupplierPhone1(txtTell.getText().trim());
 
@@ -313,7 +304,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
             selectedSupplier.setSupplierAddress(txtAddress.getText().trim());
             selectedSupplier.setSupplierMobile(txtMobile.getText().trim());
             selectedSupplier.setSupplierName(txtName.getText().trim());
-            selectedSupplier.setSupplierAccountId(Integer.parseInt(txtAccountID.getText().trim()));
             selectedSupplier.setSupplierEmail(txtEmail.getText().trim());
             selectedSupplier.setSupplierPhone1(txtTell.getText().trim());
 
@@ -362,7 +352,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
             txtName.setText(selectedSupplier.getSupplierName());
             txtMobile.setText(selectedSupplier.getSupplierMobile());
             txtTell.setText(selectedSupplier.getSupplierPhone1());
-            txtAccountID.setText(selectedSupplier.getSupplierAccountId() + "");
             txtEmail.setText(selectedSupplier.getSupplierEmail());
 
         }
@@ -392,11 +381,11 @@ public class frmISupplier extends javax.swing.JInternalFrame {
         tblModel.setRowCount(0);
         for (Supplier supplier : supList) {
             if (name == null) {
-                tblModel.addRow(new Object[]{supplier.getSupplierName(), supplier.getSupplierPhone1(), supplier.getSupplierMobile(), supplier.getSupplierAddress(), supplier.getSupplierEmail(), supplier.getSupplierAccountId()});
+                tblModel.addRow(new Object[]{supplier.getSupplierName(), supplier.getSupplierPhone1(), supplier.getSupplierMobile(), supplier.getSupplierAddress(), supplier.getSupplierEmail() });
 
             } else if (supplier.getSupplierName().toLowerCase().startsWith(name.toLowerCase())) {
 
-                tblModel.addRow(new Object[]{supplier.getSupplierName(), supplier.getSupplierPhone1(), supplier.getSupplierMobile(), supplier.getSupplierAddress(), supplier.getSupplierEmail(), supplier.getSupplierAccountId()});
+                tblModel.addRow(new Object[]{supplier.getSupplierName(), supplier.getSupplierPhone1(), supplier.getSupplierMobile(), supplier.getSupplierAddress(), supplier.getSupplierEmail()});
             }
         }
 
@@ -407,7 +396,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
         txtFindBy.setEnabled(true);
         txtMobile.setEnabled(true);
         txtTell.setEnabled(true);
-        txtAccountID.setEnabled(true);
         txtEmail.setEnabled(true);
     }
 
@@ -416,7 +404,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
         txtFindBy.setEnabled(false);
         txtMobile.setEnabled(false);
         txtTell.setEnabled(false);
-        txtAccountID.setEnabled(false);
         txtEmail.setEnabled(false);
     }
 
@@ -426,7 +413,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
         txtFindBy.setText("");
         txtMobile.setText("");
         txtTell.setText("");
-        txtAccountID.setText("");
         txtEmail.setText("");
 
     }
@@ -436,7 +422,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
     private javax.swing.JButton btnSave;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -448,7 +433,6 @@ public class frmISupplier extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton optDelete;
     private javax.swing.JRadioButton optUpdate;
     private javax.swing.JTable tblMain;
-    private javax.swing.JTextField txtAccountID;
     private javax.swing.JTextArea txtAddress;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtFindBy;
