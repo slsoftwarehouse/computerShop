@@ -334,7 +334,7 @@ public class Entity implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Entity[ id=" + id + " ]";
+        return name;
     }
     
 }

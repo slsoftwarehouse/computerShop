@@ -30,11 +30,14 @@ public class frmICustomer extends javax.swing.JInternalFrame {
     /**
      * Creates new form frmICustomer
      */
-    public frmICustomer(boolean b) {
+    public frmICustomer(boolean isCustomer) {
         initComponents();
         
-        if(b){
-            setTitle("Supplier");
+       if(isCustomer){
+         this.setTitle("Customer");
+        }else{
+         this.setTitle("Supplier");
+         jLabel5.setText("BRN");
         }
         Query query = em.createNamedQuery("Entity.findAll");
         custList = (List<Entity>) query.getResultList();
@@ -58,7 +61,6 @@ public class frmICustomer extends javax.swing.JInternalFrame {
 
             }
         });
-
     }
 
     /**
