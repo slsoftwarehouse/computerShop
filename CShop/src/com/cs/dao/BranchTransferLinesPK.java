@@ -15,25 +15,25 @@ import javax.persistence.Embeddable;
  * @author home
  */
 @Embeddable
-public class ProductPK implements Serializable {
+public class BranchTransferLinesPK implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "id")
     private String id;
     @Basic(optional = false)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "serial")
+    private String serial;
     @Basic(optional = false)
-    @Column(name = "org_branch")
-    private int orgBranch;
+    @Column(name = "pcode")
+    private String pcode;
 
-    public ProductPK() {
+    public BranchTransferLinesPK() {
     }
 
-    public ProductPK(String id, String name, int orgBranch) {
+    public BranchTransferLinesPK(String id, String serial, String pcode) {
         this.id = id;
-        this.name = name;
-        this.orgBranch = orgBranch;
+        this.serial = serial;
+        this.pcode = pcode;
     }
 
     public String getId() {
@@ -44,45 +44,45 @@ public class ProductPK implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getSerial() {
+        return serial;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSerial(String serial) {
+        this.serial = serial;
     }
 
-    public int getOrgBranch() {
-        return orgBranch;
+    public String getPcode() {
+        return pcode;
     }
 
-    public void setOrgBranch(int orgBranch) {
-        this.orgBranch = orgBranch;
+    public void setPcode(String pcode) {
+        this.pcode = pcode;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        hash += (name != null ? name.hashCode() : 0);
-        hash += (int) orgBranch;
+        hash += (serial != null ? serial.hashCode() : 0);
+        hash += (pcode != null ? pcode.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ProductPK)) {
+        if (!(object instanceof BranchTransferLinesPK)) {
             return false;
         }
-        ProductPK other = (ProductPK) object;
+        BranchTransferLinesPK other = (BranchTransferLinesPK) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
+        if ((this.serial == null && other.serial != null) || (this.serial != null && !this.serial.equals(other.serial))) {
             return false;
         }
-        if (this.orgBranch != other.orgBranch) {
+        if ((this.pcode == null && other.pcode != null) || (this.pcode != null && !this.pcode.equals(other.pcode))) {
             return false;
         }
         return true;
@@ -90,7 +90,7 @@ public class ProductPK implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.ProductPK[ id=" + id + ", name=" + name + ", orgBranch=" + orgBranch + " ]";
+        return "com.cs.dao.BranchTransferLinesPK[ id=" + id + ", serial=" + serial + ", pcode=" + pcode + " ]";
     }
     
 }

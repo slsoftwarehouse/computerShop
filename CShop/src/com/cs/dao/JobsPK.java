@@ -15,25 +15,21 @@ import javax.persistence.Embeddable;
  * @author home
  */
 @Embeddable
-public class ProductPK implements Serializable {
+public class JobsPK implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "id")
     private String id;
     @Basic(optional = false)
-    @Column(name = "name")
-    private String name;
-    @Basic(optional = false)
-    @Column(name = "org_branch")
-    private int orgBranch;
+    @Column(name = "customer")
+    private String customer;
 
-    public ProductPK() {
+    public JobsPK() {
     }
 
-    public ProductPK(String id, String name, int orgBranch) {
+    public JobsPK(String id, String customer) {
         this.id = id;
-        this.name = name;
-        this.orgBranch = orgBranch;
+        this.customer = customer;
     }
 
     public String getId() {
@@ -44,45 +40,33 @@ public class ProductPK implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getCustomer() {
+        return customer;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getOrgBranch() {
-        return orgBranch;
-    }
-
-    public void setOrgBranch(int orgBranch) {
-        this.orgBranch = orgBranch;
+    public void setCustomer(String customer) {
+        this.customer = customer;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        hash += (name != null ? name.hashCode() : 0);
-        hash += (int) orgBranch;
+        hash += (customer != null ? customer.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ProductPK)) {
+        if (!(object instanceof JobsPK)) {
             return false;
         }
-        ProductPK other = (ProductPK) object;
+        JobsPK other = (JobsPK) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
-            return false;
-        }
-        if (this.orgBranch != other.orgBranch) {
+        if ((this.customer == null && other.customer != null) || (this.customer != null && !this.customer.equals(other.customer))) {
             return false;
         }
         return true;
@@ -90,7 +74,7 @@ public class ProductPK implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.ProductPK[ id=" + id + ", name=" + name + ", orgBranch=" + orgBranch + " ]";
+        return "com.cs.dao.JobsPK[ id=" + id + ", customer=" + customer + " ]";
     }
     
 }

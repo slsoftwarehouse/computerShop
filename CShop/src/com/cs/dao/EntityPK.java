@@ -15,25 +15,25 @@ import javax.persistence.Embeddable;
  * @author home
  */
 @Embeddable
-public class ProductPK implements Serializable {
+public class EntityPK implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "id")
     private String id;
     @Basic(optional = false)
-    @Column(name = "name")
-    private String name;
+    @Column(name = "entity_type")
+    private int entityType;
     @Basic(optional = false)
-    @Column(name = "org_branch")
-    private int orgBranch;
+    @Column(name = "BRN")
+    private String brn;
 
-    public ProductPK() {
+    public EntityPK() {
     }
 
-    public ProductPK(String id, String name, int orgBranch) {
+    public EntityPK(String id, int entityType, String brn) {
         this.id = id;
-        this.name = name;
-        this.orgBranch = orgBranch;
+        this.entityType = entityType;
+        this.brn = brn;
     }
 
     public String getId() {
@@ -44,45 +44,45 @@ public class ProductPK implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public int getEntityType() {
+        return entityType;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setEntityType(int entityType) {
+        this.entityType = entityType;
     }
 
-    public int getOrgBranch() {
-        return orgBranch;
+    public String getBrn() {
+        return brn;
     }
 
-    public void setOrgBranch(int orgBranch) {
-        this.orgBranch = orgBranch;
+    public void setBrn(String brn) {
+        this.brn = brn;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (id != null ? id.hashCode() : 0);
-        hash += (name != null ? name.hashCode() : 0);
-        hash += (int) orgBranch;
+        hash += (int) entityType;
+        hash += (brn != null ? brn.hashCode() : 0);
         return hash;
     }
 
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ProductPK)) {
+        if (!(object instanceof EntityPK)) {
             return false;
         }
-        ProductPK other = (ProductPK) object;
+        EntityPK other = (EntityPK) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
-        if ((this.name == null && other.name != null) || (this.name != null && !this.name.equals(other.name))) {
+        if (this.entityType != other.entityType) {
             return false;
         }
-        if (this.orgBranch != other.orgBranch) {
+        if ((this.brn == null && other.brn != null) || (this.brn != null && !this.brn.equals(other.brn))) {
             return false;
         }
         return true;
@@ -90,7 +90,7 @@ public class ProductPK implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.ProductPK[ id=" + id + ", name=" + name + ", orgBranch=" + orgBranch + " ]";
+        return "com.cs.dao.EntityPK[ id=" + id + ", entityType=" + entityType + ", brn=" + brn + " ]";
     }
     
 }

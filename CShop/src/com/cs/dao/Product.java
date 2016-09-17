@@ -6,55 +6,93 @@
 package com.cs.dao;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author hasangi
+ * @author home
  */
 @Entity
 @Table(name = "product")
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Product.findAll", query = "SELECT p FROM Product p"),
-    @NamedQuery(name = "Product.findByProductId", query = "SELECT p FROM Product p WHERE p.productPK.productId = :productId"),
-    @NamedQuery(name = "Product.findByProductCatagoryId", query = "SELECT p FROM Product p WHERE p.productCatagoryId = :productCatagoryId"),
-    @NamedQuery(name = "Product.findByProductName", query = "SELECT p FROM Product p WHERE p.productName = :productName"),
-    @NamedQuery(name = "Product.findByQty", query = "SELECT p FROM Product p WHERE p.qty = :qty"),
-    @NamedQuery(name = "Product.findByBprice", query = "SELECT p FROM Product p WHERE p.bprice = :bprice"),
-    @NamedQuery(name = "Product.findBySprice", query = "SELECT p FROM Product p WHERE p.sprice = :sprice"),
-    @NamedQuery(name = "Product.findByUserId", query = "SELECT p FROM Product p WHERE p.userId = :userId"),
-    @NamedQuery(name = "Product.findByTakeStockPrice", query = "SELECT p FROM Product p WHERE p.takeStockPrice = :takeStockPrice"),
-    @NamedQuery(name = "Product.findByBranchId", query = "SELECT p FROM Product p WHERE p.productPK.branchId = :branchId"),
-    @NamedQuery(name = "Product.findByUpdatedToServer", query = "SELECT p FROM Product p WHERE p.updatedToServer = :updatedToServer")})
+    @NamedQuery(name = "Product.findById", query = "SELECT p FROM Product p WHERE p.productPK.id = :id"),
+    @NamedQuery(name = "Product.findByName", query = "SELECT p FROM Product p WHERE p.productPK.name = :name"),
+    @NamedQuery(name = "Product.findByOrgBranch", query = "SELECT p FROM Product p WHERE p.productPK.orgBranch = :orgBranch"),
+    @NamedQuery(name = "Product.findByManagePriceGlobaly", query = "SELECT p FROM Product p WHERE p.managePriceGlobaly = :managePriceGlobaly"),
+    @NamedQuery(name = "Product.findByGlobalDealerPrice", query = "SELECT p FROM Product p WHERE p.globalDealerPrice = :globalDealerPrice"),
+    @NamedQuery(name = "Product.findByGlobalEnduserPrice", query = "SELECT p FROM Product p WHERE p.globalEnduserPrice = :globalEnduserPrice"),
+    @NamedQuery(name = "Product.findByGlobslCostPrice", query = "SELECT p FROM Product p WHERE p.globslCostPrice = :globslCostPrice"),
+    @NamedQuery(name = "Product.findByGlobalActualCostPrice", query = "SELECT p FROM Product p WHERE p.globalActualCostPrice = :globalActualCostPrice"),
+    @NamedQuery(name = "Product.findByQih", query = "SELECT p FROM Product p WHERE p.qih = :qih"),
+    @NamedQuery(name = "Product.findByDqih", query = "SELECT p FROM Product p WHERE p.dqih = :dqih"),
+    @NamedQuery(name = "Product.findByDatetime", query = "SELECT p FROM Product p WHERE p.datetime = :datetime"),
+    @NamedQuery(name = "Product.findByPrefix", query = "SELECT p FROM Product p WHERE p.prefix = :prefix")})
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @EmbeddedId
     protected ProductPK productPK;
-    @Column(name = "product_catagory_id")
-    private Integer productCatagoryId;
-    @Column(name = "product_name")
-    private String productName;
-    @Column(name = "qty")
-    private Integer qty;
+    @Column(name = "manage_price_globaly")
+    private Boolean managePriceGlobaly;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "bprice")
-    private Double bprice;
-    @Column(name = "sprice")
-    private Double sprice;
-    @Column(name = "user_id")
-    private Integer userId;
-    @Column(name = "take_stock_price")
-    private Boolean takeStockPrice;
-    @Column(name = "updated_to_server")
-    private Integer updatedToServer;
+    @Column(name = "global_dealer_price")
+    private Double globalDealerPrice;
+    @Column(name = "global_enduser_price")
+    private Double globalEnduserPrice;
+    @Column(name = "globsl_cost_price")
+    private Double globslCostPrice;
+    @Column(name = "global_actual_cost_price")
+    private Double globalActualCostPrice;
+    @Column(name = "qih")
+    private Integer qih;
+    @Column(name = "dqih")
+    private Integer dqih;
+    @Column(name = "datetime")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date datetime;
+    @Column(name = "prefix")
+    private String prefix;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    private List<SupplierProduct> supplierProductList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    private List<SampleLines> sampleLinesList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    private List<GrnLines> grnLinesList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    private List<BranchTransferLines> branchTransferLinesList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    private List<JobsLines> jobsLinesList;
+    @JoinColumn(name = "org_branch", referencedColumnName = "id", insertable = false, updatable = false)
+    @ManyToOne(optional = false)
+    private Branch branch;
+    @JoinColumn(name = "user", referencedColumnName = "id")
+    @ManyToOne
+    private Users user;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    private List<GrnReturnLines> grnReturnLinesList;
+    @OneToMany(mappedBy = "product")
+    private List<ProductBinCard> productBinCardList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    private List<InvoiceLines> invoiceLinesList;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    private List<Warrranty> warrrantyList;
 
     public Product() {
     }
@@ -63,8 +101,8 @@ public class Product implements Serializable {
         this.productPK = productPK;
     }
 
-    public Product(int productId, int branchId) {
-        this.productPK = new ProductPK(productId, branchId);
+    public Product(String id, String name, int orgBranch) {
+        this.productPK = new ProductPK(id, name, orgBranch);
     }
 
     public ProductPK getProductPK() {
@@ -75,68 +113,173 @@ public class Product implements Serializable {
         this.productPK = productPK;
     }
 
-    public Integer getProductCatagoryId() {
-        return productCatagoryId;
+    public Boolean getManagePriceGlobaly() {
+        return managePriceGlobaly;
     }
 
-    public void setProductCatagoryId(Integer productCatagoryId) {
-        this.productCatagoryId = productCatagoryId;
+    public void setManagePriceGlobaly(Boolean managePriceGlobaly) {
+        this.managePriceGlobaly = managePriceGlobaly;
     }
 
-    public String getProductName() {
-        return productName;
+    public Double getGlobalDealerPrice() {
+        return globalDealerPrice;
     }
 
-    public void setProductName(String productName) {
-        this.productName = productName;
+    public void setGlobalDealerPrice(Double globalDealerPrice) {
+        this.globalDealerPrice = globalDealerPrice;
     }
 
-    public Integer getQty() {
-        return qty;
+    public Double getGlobalEnduserPrice() {
+        return globalEnduserPrice;
     }
 
-    public void setQty(Integer qty) {
-        this.qty = qty;
+    public void setGlobalEnduserPrice(Double globalEnduserPrice) {
+        this.globalEnduserPrice = globalEnduserPrice;
     }
 
-    public Double getBprice() {
-        return bprice;
+    public Double getGlobslCostPrice() {
+        return globslCostPrice;
     }
 
-    public void setBprice(Double bprice) {
-        this.bprice = bprice;
+    public void setGlobslCostPrice(Double globslCostPrice) {
+        this.globslCostPrice = globslCostPrice;
     }
 
-    public Double getSprice() {
-        return sprice;
+    public Double getGlobalActualCostPrice() {
+        return globalActualCostPrice;
     }
 
-    public void setSprice(Double sprice) {
-        this.sprice = sprice;
+    public void setGlobalActualCostPrice(Double globalActualCostPrice) {
+        this.globalActualCostPrice = globalActualCostPrice;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getQih() {
+        return qih;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setQih(Integer qih) {
+        this.qih = qih;
     }
 
-    public Boolean getTakeStockPrice() {
-        return takeStockPrice;
+    public Integer getDqih() {
+        return dqih;
     }
 
-    public void setTakeStockPrice(Boolean takeStockPrice) {
-        this.takeStockPrice = takeStockPrice;
+    public void setDqih(Integer dqih) {
+        this.dqih = dqih;
     }
 
-    public Integer getUpdatedToServer() {
-        return updatedToServer;
+    public Date getDatetime() {
+        return datetime;
     }
 
-    public void setUpdatedToServer(Integer updatedToServer) {
-        this.updatedToServer = updatedToServer;
+    public void setDatetime(Date datetime) {
+        this.datetime = datetime;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    @XmlTransient
+    public List<SupplierProduct> getSupplierProductList() {
+        return supplierProductList;
+    }
+
+    public void setSupplierProductList(List<SupplierProduct> supplierProductList) {
+        this.supplierProductList = supplierProductList;
+    }
+
+    @XmlTransient
+    public List<SampleLines> getSampleLinesList() {
+        return sampleLinesList;
+    }
+
+    public void setSampleLinesList(List<SampleLines> sampleLinesList) {
+        this.sampleLinesList = sampleLinesList;
+    }
+
+    @XmlTransient
+    public List<GrnLines> getGrnLinesList() {
+        return grnLinesList;
+    }
+
+    public void setGrnLinesList(List<GrnLines> grnLinesList) {
+        this.grnLinesList = grnLinesList;
+    }
+
+    @XmlTransient
+    public List<BranchTransferLines> getBranchTransferLinesList() {
+        return branchTransferLinesList;
+    }
+
+    public void setBranchTransferLinesList(List<BranchTransferLines> branchTransferLinesList) {
+        this.branchTransferLinesList = branchTransferLinesList;
+    }
+
+    @XmlTransient
+    public List<JobsLines> getJobsLinesList() {
+        return jobsLinesList;
+    }
+
+    public void setJobsLinesList(List<JobsLines> jobsLinesList) {
+        this.jobsLinesList = jobsLinesList;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
+    }
+
+    public Users getUser() {
+        return user;
+    }
+
+    public void setUser(Users user) {
+        this.user = user;
+    }
+
+    @XmlTransient
+    public List<GrnReturnLines> getGrnReturnLinesList() {
+        return grnReturnLinesList;
+    }
+
+    public void setGrnReturnLinesList(List<GrnReturnLines> grnReturnLinesList) {
+        this.grnReturnLinesList = grnReturnLinesList;
+    }
+
+    @XmlTransient
+    public List<ProductBinCard> getProductBinCardList() {
+        return productBinCardList;
+    }
+
+    public void setProductBinCardList(List<ProductBinCard> productBinCardList) {
+        this.productBinCardList = productBinCardList;
+    }
+
+    @XmlTransient
+    public List<InvoiceLines> getInvoiceLinesList() {
+        return invoiceLinesList;
+    }
+
+    public void setInvoiceLinesList(List<InvoiceLines> invoiceLinesList) {
+        this.invoiceLinesList = invoiceLinesList;
+    }
+
+    @XmlTransient
+    public List<Warrranty> getWarrrantyList() {
+        return warrrantyList;
+    }
+
+    public void setWarrrantyList(List<Warrranty> warrrantyList) {
+        this.warrrantyList = warrrantyList;
     }
 
     @Override
