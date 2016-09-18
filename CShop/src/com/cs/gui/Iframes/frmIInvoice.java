@@ -8,15 +8,19 @@ package com.cs.gui.Iframes;
 import com.cs.dao.Accounts;
 import com.cs.dao.ApplicationConstants;
 import com.cs.dao.Entity;
-import com.cs.dao.Product;
 import com.cs.gui.frmMain;
+import com.cs.util.Utills;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
+import javax.swing.JPanel;
 
 /**
  *
@@ -28,43 +32,74 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
      * Creates new form frmInvoice
      */
     private final EntityManager em = frmMain.emf.createEntityManager();
-    
-    static String CUSTOMER_QUERY = "SELECT e FROM Entity e WHERE e.entityType =0 and e.active=1 and ";
-    
+
+    static String CUSTOMER_QUERY = "SELECT e FROM Entity e WHERE e.entityType =0 and e.active=1";
+
     private List<Entity> customerList = new ArrayList<Entity>();
     private List<ApplicationConstants> paymentMethodList = new ArrayList<ApplicationConstants>();
     Entity selectedCustomer;
-    
+
     public frmIInvoice() {
-        
+
         initComponents();
         ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Miss");
         ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Mrs");
         ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Mr");
         ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Rev");
+
     }
-    
-    void searchCustomer(String searchString) {
+
+    void setCustomerFileds(Entity e) {
+
+        txtCContactNumber.setText(e.getContactNumber());
+        txtCCreditLimit.setText(Utills.formatDecimal(e.getCreditLimit()));
+        txtCEmail.setText(e.getEmail());
+        txtCName.setText(e.getName());
+        txtCNIC.setText(e.getBrn());
+        txtCLandLine.setText(e.getLandLine());
+        cboCTitle.setSelectedItem(e.getTitile());
+        txtAddress.setText(e.getAddress());
+        List<Accounts> accountsList = e.getAccountsList();
+        double totalCredit = 0;
+        for (Accounts acc : accountsList) {
+            totalCredit += acc.getCredit() - acc.getDebit();
+        }
+        txtCCredit.setText("" + Utills.formatDecimal(totalCredit));
+    }
+
+    void searchCustomer(String searchString, String paraName, String paraValue) {
+        clearCustomerFields();
         Query createQuery = em.createQuery(CUSTOMER_QUERY + searchString);
+        createQuery.setParameter(paraName, paraValue);
         createQuery.setMaxResults(1);
         List<Entity> entity = (List<Entity>) createQuery.getResultList();
         for (Entity e : entity) {
             selectedCustomer = e;
-            txtCContactNumber.setText(e.getContactNumber());
-            txtCCreditLimit.setText(e.getCreditLimit().toString());
-            txtCEmail.setText(e.getEmail());
-            ((DefaultComboBoxModel) cboCName.getModel()).addElement(e);
-            txtCNIC.setText(e.getBrn());
-            txtCLandLine.setText(e.getLandLine());
-            cboCTitle.setSelectedItem(e.getTitile());
-            
-            List<Accounts> accountsList = e.getAccountsList();
-            double totalCredit=0;
-            for(Accounts acc : accountsList){
-                totalCredit+=acc.getCredit()-acc.getDebit();
-            }
-            txtCCredit.setText(""+totalCredit);
+            setCustomerFileds(e);
+
         }
+    }
+
+    void searchCustomerByName(String searchString) {
+        clearCustomerFields();
+        Query createQuery = em.createQuery(CUSTOMER_QUERY + searchString);
+        createQuery.setMaxResults(15);
+        List<Entity> entity = (List<Entity>) createQuery.getResultList();
+        for (Entity e : entity) {
+            //((DefaultComboBoxModel) cboCName.getModel()).addElement(e);
+        }
+    }
+
+    void clearCustomerFields() {
+        txtCContactNumber.setText("");
+        txtCCreditLimit.setText("");
+        txtCEmail.setText("");
+        txtCName.setText("");
+        txtCNIC.setText("");
+        txtCLandLine.setText("");
+        cboCTitle.setSelectedItem("");
+        txtCCredit.setText("");
+        txtAddress.setText("");
     }
 
     /**
@@ -115,9 +150,11 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
         chkShowOnBill = new javax.swing.JCheckBox();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblSearchDetails = new javax.swing.JTable();
-        cboCName = new javax.swing.JComboBox<Entity>();
         txtCCredit = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
+        jLabel18 = new javax.swing.JLabel();
+        txtAddress = new javax.swing.JTextField();
+        txtCName = new javax.swing.JTextField();
 
         setClosable(true);
         setTitle("Invoice");
@@ -206,6 +243,24 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
             }
         });
 
+        txtCLandLine.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCLandLineActionPerformed(evt);
+            }
+        });
+
+        txtCEmail.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCEmailActionPerformed(evt);
+            }
+        });
+
+        txtCNIC.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCNICActionPerformed(evt);
+            }
+        });
+
         jLabel16.setText("Credit Limit");
 
         chkNewCustomer.setText("New Customer");
@@ -257,75 +312,25 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
             tblSearchDetails.getColumnModel().getColumn(6).setResizable(false);
         }
 
-        cboCName.setEditable(true);
-
         jLabel17.setText("Credit");
+
+        jLabel18.setText("Address");
+
+        txtCName.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCNameActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(37, 37, 37)
-                                .addComponent(txtCContactNumber))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtInvoiceNumber)
-                                    .addComponent(cboCTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(txtCCreditLimit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtCLandLine, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(chkShowOnBill)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(chkNewCustomer))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtCCredit))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                        .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                        .addComponent(txtCEmail)
-                                        .addComponent(txtCNIC, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                .addComponent(cboCName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addGap(26, 26, 26)
-                                .addComponent(txtProductCode, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26)
-                                .addComponent(jLabel11)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtProductSrial, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(26, 26, 26)
-                                .addComponent(jLabel12)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtProductName))
-                            .addComponent(jScrollPane2)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1)
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cboPaymentMethod, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -350,15 +355,77 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnCreateInvoice)
-                            .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
+                            .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(37, 37, 37)
+                                        .addComponent(txtCContactNumber))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel1)
+                                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(txtInvoiceNumber)
+                                            .addComponent(cboCTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtCCreditLimit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(txtCLandLine, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(chkShowOnBill)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(chkNewCustomer))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(txtCCredit))
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                            .addComponent(txtCEmail)
+                                            .addComponent(txtCNIC, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(txtCName)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtAddress)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(26, 26, 26)
+                                .addComponent(txtProductCode, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(26, 26, 26)
+                                .addComponent(jLabel11)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtProductSrial, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(26, 26, 26)
+                                .addComponent(jLabel12)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtProductName))
+                            .addComponent(jScrollPane2))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
@@ -370,7 +437,6 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 3, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(txtInvoiceNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -380,7 +446,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
                             .addComponent(cboCTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cboCName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtCName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4)
@@ -399,10 +465,14 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                             .addComponent(txtCCreditLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel17)
-                                .addComponent(txtCCredit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtCCredit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel18)
+                            .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 323, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel9)
@@ -435,13 +505,70 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_chkShowOnBillActionPerformed
 
     private void txtCContactNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCContactNumberActionPerformed
-        searchCustomer(" e.contactNumber = " + txtCContactNumber.getText());
+
+        if (txtCContactNumber.getText().length() > 0) {
+            searchCustomer(" and e.contactNumber = :contactNumber", "contactNumber", txtCContactNumber.getText());
+        }
     }//GEN-LAST:event_txtCContactNumberActionPerformed
+
+    private void txtCEmailActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCEmailActionPerformed
+
+        if (txtCEmail.getText().length() > 0) {
+            searchCustomer(" and e.email = :email", "email", txtCEmail.getText());
+        }
+    }//GEN-LAST:event_txtCEmailActionPerformed
+
+    private void txtCLandLineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCLandLineActionPerformed
+
+        if (txtCLandLine.getText().length() > 0) {
+            searchCustomer(" and e.landLine = :landLine", "landLine", txtCLandLine.getText());
+        }
+    }//GEN-LAST:event_txtCLandLineActionPerformed
+
+    private void txtCNICActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCNICActionPerformed
+
+        if (txtCNIC.getText().length() > 0) {
+            searchCustomer(" and e.brn = :brn", "brn", txtCNIC.getText());
+        }
+    }//GEN-LAST:event_txtCNICActionPerformed
+
+    protected JOptionPane getOptionPane(JComponent parent) {
+        JOptionPane pane = null;
+        if (!(parent instanceof JOptionPane)) {
+            pane = getOptionPane((JComponent) parent.getParent());
+        } else {
+            pane = (JOptionPane) parent;
+        }
+        return pane;
+    }
+    private void txtCNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCNameActionPerformed
+
+        
+        final JButton okay = new JButton("Ok");
+        okay.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane pane = getOptionPane((JComponent) e.getSource());
+                pane.setValue(okay);
+                if (txtCName.getText().length() > 0) {
+                searchCustomer(" and e.name = :name", "name", txtCName.getText());
+            }
+            }
+        });
+        JPanel p = new pnlSearch(CUSTOMER_QUERY + " and e.name LIKE :name", txtCName, "name",okay);
+JOptionPane.showOptionDialog(null, p, "Search Customer", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[]{okay}, okay);
+//
+//        if (JOptionPane.showConfirmDialog(null, p, "Search Customer", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.YES_OPTION) {
+//
+//            
+//
+//        }
+
+    }//GEN-LAST:event_txtCNameActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateInvoice;
-    private javax.swing.JComboBox<Entity> cboCName;
     private javax.swing.JComboBox<String> cboCNote;
     private javax.swing.JComboBox<String> cboCTitle;
     private javax.swing.JComboBox<String> cboPaymentMethod;
@@ -456,6 +583,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -468,12 +596,14 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tblMain;
     private javax.swing.JTable tblSearchDetails;
+    private javax.swing.JTextField txtAddress;
     private javax.swing.JTextField txtCContactNumber;
     private javax.swing.JTextField txtCCredit;
     private javax.swing.JTextField txtCCreditLimit;
     private javax.swing.JTextField txtCEmail;
     private javax.swing.JTextField txtCLandLine;
     private javax.swing.JTextField txtCNIC;
+    private javax.swing.JTextField txtCName;
     private javax.swing.JTextField txtCNoteAmount;
     private javax.swing.JTextField txtDisscount;
     private javax.swing.JTextField txtInvoiceNumber;
