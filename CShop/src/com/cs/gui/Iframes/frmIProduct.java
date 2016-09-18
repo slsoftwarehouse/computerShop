@@ -6,7 +6,7 @@
 package com.cs.gui.Iframes;
 
 import com.cs.dao.Product;
-import com.cs.dao.ProductPK;
+
 import com.cs.gui.frmMain;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +41,10 @@ public class frmIProduct extends javax.swing.JInternalFrame {
                 if (!optAdd.isSelected() && tblMain.getSelectedRow() > -1) {
                     String name = (String) tblMain.getValueAt(tblMain.getSelectedRow(), 1);
                     selectedProduct = findProduct(name);
-                    txtName.setText(selectedProduct.getProductName());
-                    txtBPrice.setText(selectedProduct.getBprice()+"");
-                    txtSPrice.setText(selectedProduct.getSprice()+"");
-                    txtQTY.setText(selectedProduct.getQty()+"");
+//                    txtName.setText(selectedProduct.getProductName());
+//                    txtBPrice.setText(selectedProduct.getBprice()+"");
+//                    txtSPrice.setText(selectedProduct.getSprice()+"");
+//                    txtQTY.setText(selectedProduct.getQty()+"");
                 }
 
             }
@@ -53,11 +53,11 @@ public class frmIProduct extends javax.swing.JInternalFrame {
     }
     
     Product findProduct(String name) {
-        for (Product product : prodList) {
-            if (product.getProductName().equals(name)) {
-                return product;
-            }
-        }
+//        for (Product product : prodList) {
+//            if (product.getProductName().equals(name)) {
+//                return product;
+//            }
+//        }
         return null;
     }
     
@@ -65,15 +65,15 @@ public class frmIProduct extends javax.swing.JInternalFrame {
 
         DefaultTableModel tblModel = (DefaultTableModel) tblMain.getModel();
         tblModel.setRowCount(0);
-        for (Product prod : prodList) {
-            if (name == null) {
-                tblModel.addRow(new Object[]{prod.getProductPK().getProductId(), prod.getProductName(), prod.getBprice(), prod.getSprice(), prod.getQty() });
-
-            } else if (prod.getProductName().toLowerCase().startsWith(name.toLowerCase())) {
-
-                tblModel.addRow(new Object[]{prod.getProductPK().getProductId(), prod.getProductName(), prod.getBprice(), prod.getSprice(), prod.getQty() });
-            }
-        }
+//        for (Product prod : prodList) {
+//            if (name == null) {
+//                tblModel.addRow(new Object[]{prod.getProductPK().getProductId(), prod.getProductName(), prod.getBprice(), prod.getSprice(), prod.getQty() });
+//
+//            } else if (prod.getProductName().toLowerCase().startsWith(name.toLowerCase())) {
+//
+//                tblModel.addRow(new Object[]{prod.getProductPK().getProductId(), prod.getProductName(), prod.getBprice(), prod.getSprice(), prod.getQty() });
+//            }
+//        }
 
     }
 
@@ -339,28 +339,28 @@ public class frmIProduct extends javax.swing.JInternalFrame {
         }
 
         if (optAdd.isSelected()) {
-            em.getTransaction().begin();
-            Product product = new Product();
-            product.setProductPK(new ProductPK());
-            product.setProductName(txtName.getText());
-            product.setBprice(Double.parseDouble(txtBPrice.getText()));
-            product.setSprice(Double.parseDouble(txtSPrice.getText()));
-            product.setQty(Integer.parseInt(txtQTY.getText()));
-            
-            em.persist(product);
-            em.getTransaction().commit();
-            prodList.add(product);
-            loadProductTable(null);
+//            em.getTransaction().begin();
+//            Product product = new Product();
+//            product.setProductPK(new ProductPK());
+//            product.setProductName(txtName.getText());
+//            product.setBprice(Double.parseDouble(txtBPrice.getText()));
+//            product.setSprice(Double.parseDouble(txtSPrice.getText()));
+//            product.setQty(Integer.parseInt(txtQTY.getText()));
+//            
+//            em.persist(product);
+//            em.getTransaction().commit();
+//            prodList.add(product);
+//            loadProductTable(null);
             JOptionPane.showMessageDialog(this, "Product Added", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
 
         if (optUpdate.isSelected() && selectedProduct != null) {
             em.getTransaction().begin();
-
-            selectedProduct.setProductName(txtName.getText());
-            selectedProduct.setBprice(Double.parseDouble(txtBPrice.getText()));
-            selectedProduct.setSprice(Double.parseDouble(txtSPrice.getText()));
-            selectedProduct.setQty(Integer.parseInt(txtQTY.getText()));
+//
+//            selectedProduct.setProductName(txtName.getText());
+//            selectedProduct.setBprice(Double.parseDouble(txtBPrice.getText()));
+//            selectedProduct.setSprice(Double.parseDouble(txtSPrice.getText()));
+//            selectedProduct.setQty(Integer.parseInt(txtQTY.getText()));
             
             em.persist(selectedProduct);
             em.getTransaction().commit();

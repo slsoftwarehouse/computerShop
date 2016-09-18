@@ -9,9 +9,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -51,42 +51,42 @@ public class Branch implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<SupplierProduct> supplierProductList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<GrnReturn> grnReturnList;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<CreditNote> creditNoteList;
-    @OneToMany(mappedBy = "branch")
+    @OneToMany(mappedBy = "branch", fetch = FetchType.LAZY)
     private List<GrnLines> grnLinesList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<Grn> grnList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "branch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<Product> productList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<CashBook> cashBookList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<Jobs> jobsList;
-    @OneToMany(mappedBy = "acceptedBranch")
+    @OneToMany(mappedBy = "acceptedBranch", fetch = FetchType.LAZY)
     private List<BranchTransfer> branchTransferList;
-    @OneToMany(mappedBy = "transferedBranch")
+    @OneToMany(mappedBy = "transferedBranch", fetch = FetchType.LAZY)
     private List<BranchTransfer> branchTransferList1;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<Sample> sampleList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<Users> usersList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<ProductBinCard> productBinCardList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<Cheques> chequesList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<Invoice> invoiceList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<com.cs.dao.Entity> entityList;
-    @OneToMany(mappedBy = "orgBranch")
+    @OneToMany(mappedBy = "orgBranch", fetch = FetchType.LAZY)
     private List<Warrranty> warrrantyList;
 
     public Branch() {

@@ -7,9 +7,11 @@ package com.cs.dao;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -28,10 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "InvoiceLines.findAll", query = "SELECT i FROM InvoiceLines i"),
-    @NamedQuery(name = "InvoiceLines.findById", query = "SELECT i FROM InvoiceLines i WHERE i.invoiceLinesPK.id = :id"),
-    @NamedQuery(name = "InvoiceLines.findByInvoice", query = "SELECT i FROM InvoiceLines i WHERE i.invoiceLinesPK.invoice = :invoice"),
-    @NamedQuery(name = "InvoiceLines.findByProduct", query = "SELECT i FROM InvoiceLines i WHERE i.invoiceLinesPK.product = :product"),
-    @NamedQuery(name = "InvoiceLines.findBySerial", query = "SELECT i FROM InvoiceLines i WHERE i.invoiceLinesPK.serial = :serial"),
+    @NamedQuery(name = "InvoiceLines.findById", query = "SELECT i FROM InvoiceLines i WHERE i.id = :id"),
     @NamedQuery(name = "InvoiceLines.findByQty", query = "SELECT i FROM InvoiceLines i WHERE i.qty = :qty"),
     @NamedQuery(name = "InvoiceLines.findByWarrantyEndDate", query = "SELECT i FROM InvoiceLines i WHERE i.warrantyEndDate = :warrantyEndDate"),
     @NamedQuery(name = "InvoiceLines.findByCostPrice", query = "SELECT i FROM InvoiceLines i WHERE i.costPrice = :costPrice"),
@@ -48,8 +47,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class InvoiceLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected InvoiceLinesPK invoiceLinesPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
     @Column(name = "qty")
     private Integer qty;
     @Column(name = "warranty_end_date")
@@ -80,36 +81,32 @@ public class InvoiceLines implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @JoinColumn(name = "invoice", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Invoice invoice1;
-    @JoinColumn(name = "product", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Product product1;
-    @JoinColumn(name = "serial", referencedColumnName = "serial", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private GrnLines grnLines;
+    @JoinColumn(name = "invoice", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Invoice invoice;
+    @JoinColumn(name = "product", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product product;
+    @JoinColumn(name = "serial", referencedColumnName = "serial")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public InvoiceLines() {
     }
 
-    public InvoiceLines(InvoiceLinesPK invoiceLinesPK) {
-        this.invoiceLinesPK = invoiceLinesPK;
+    public InvoiceLines(String id) {
+        this.id = id;
     }
 
-    public InvoiceLines(String id, String invoice, String product, String serial) {
-        this.invoiceLinesPK = new InvoiceLinesPK(id, invoice, product, serial);
+    public String getId() {
+        return id;
     }
 
-    public InvoiceLinesPK getInvoiceLinesPK() {
-        return invoiceLinesPK;
-    }
-
-    public void setInvoiceLinesPK(InvoiceLinesPK invoiceLinesPK) {
-        this.invoiceLinesPK = invoiceLinesPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Integer getQty() {
@@ -216,28 +213,28 @@ public class InvoiceLines implements Serializable {
         this.prefix = prefix;
     }
 
-    public Invoice getInvoice1() {
-        return invoice1;
+    public Invoice getInvoice() {
+        return invoice;
     }
 
-    public void setInvoice1(Invoice invoice1) {
-        this.invoice1 = invoice1;
+    public void setInvoice(Invoice invoice) {
+        this.invoice = invoice;
     }
 
-    public Product getProduct1() {
-        return product1;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProduct1(Product product1) {
-        this.product1 = product1;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public GrnLines getGrnLines() {
-        return grnLines;
+    public GrnLines getSerial() {
+        return serial;
     }
 
-    public void setGrnLines(GrnLines grnLines) {
-        this.grnLines = grnLines;
+    public void setSerial(GrnLines serial) {
+        this.serial = serial;
     }
 
     public Users getUser() {
@@ -251,7 +248,7 @@ public class InvoiceLines implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (invoiceLinesPK != null ? invoiceLinesPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -262,7 +259,7 @@ public class InvoiceLines implements Serializable {
             return false;
         }
         InvoiceLines other = (InvoiceLines) object;
-        if ((this.invoiceLinesPK == null && other.invoiceLinesPK != null) || (this.invoiceLinesPK != null && !this.invoiceLinesPK.equals(other.invoiceLinesPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -270,7 +267,7 @@ public class InvoiceLines implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.InvoiceLines[ invoiceLinesPK=" + invoiceLinesPK + " ]";
+        return "com.cs.dao.InvoiceLines[ id=" + id + " ]";
     }
     
 }

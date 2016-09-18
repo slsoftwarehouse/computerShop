@@ -5,8 +5,7 @@
  */
 package com.cs.gui.Iframes;
 
-import com.cs.dao.Supplier;
-import com.cs.dao.SupplierPK;
+
 import com.cs.gui.frmMain;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,31 +24,31 @@ public class frmISupplier extends javax.swing.JInternalFrame {
 
     private final EntityManager em = frmMain.emf.createEntityManager();
 
-    private List<Supplier> supList = new ArrayList<>();
-    Supplier selectedSupplier;
+//    private List<Supplier> supList = new ArrayList<>();
+//    Supplier selectedSupplier;
 
     /**
      * Creates new form frmICustomer
      */
     public frmISupplier() {
         initComponents();
-        Query query = em.createNamedQuery("Supplier.findAll");
-        supList = (List<Supplier>) query.getResultList();
-        loadSupplierTable(null);
-        tblMain.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent event) {
-                if (!optAdd.isSelected() && tblMain.getSelectedRow() > -1) {
-                    String name = (String) tblMain.getValueAt(tblMain.getSelectedRow(), 0);
-                    selectedSupplier = findSupplier(name);
-                    txtAddress.setText(selectedSupplier.getSupplierAddress());
-                    txtName.setText(selectedSupplier.getSupplierName());
-                    txtMobile.setText(selectedSupplier.getSupplierMobile());
-                    txtTell.setText(selectedSupplier.getSupplierPhone1());
-                    txtEmail.setText(selectedSupplier.getSupplierEmail());
-                }
-
-            }
-        });
+//        Query query = em.createNamedQuery("Supplier.findAll");
+//        supList = (List<Supplier>) query.getResultList();
+//        loadSupplierTable(null);
+//        tblMain.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+//            public void valueChanged(ListSelectionEvent event) {
+//                if (!optAdd.isSelected() && tblMain.getSelectedRow() > -1) {
+//                    String name = (String) tblMain.getValueAt(tblMain.getSelectedRow(), 0);
+//                    selectedSupplier = findSupplier(name);
+//                    txtAddress.setText(selectedSupplier.getSupplierAddress());
+//                    txtName.setText(selectedSupplier.getSupplierName());
+//                    txtMobile.setText(selectedSupplier.getSupplierMobile());
+//                    txtTell.setText(selectedSupplier.getSupplierPhone1());
+//                    txtEmail.setText(selectedSupplier.getSupplierEmail());
+//                }
+//
+//            }
+//        });
 
     }
 
@@ -271,62 +270,62 @@ public class frmISupplier extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtFindByActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-        if (txtName.getText().trim().length() == 0) {
-            JOptionPane.showMessageDialog(this, "You Must Provide A Supplier Name");
-            return;
-        }
-
-        if (txtMobile.getText().trim().length() == 0) {
-            JOptionPane.showMessageDialog(this, "You Must Provide A Mobile number");
-            return;
-        }
-
-        if (optAdd.isSelected()) {
-            em.getTransaction().begin();
-            Supplier sup = new Supplier();
-            sup.setSupplierPK(new SupplierPK());
-            sup.setSupplierAddress(txtAddress.getText().trim());
-            sup.setSupplierMobile(txtMobile.getText().trim());
-            sup.setSupplierName(txtName.getText().trim());
-            sup.setSupplierEmail(txtEmail.getText().trim());
-            sup.setSupplierPhone1(txtTell.getText().trim());
-
-            em.persist(sup);
-            em.getTransaction().commit();
-            supList.add(sup);
-            loadSupplierTable(null);
-            JOptionPane.showMessageDialog(this, "Supplier Added", "Success", JOptionPane.INFORMATION_MESSAGE);
-        }
-
-        if (optUpdate.isSelected() && selectedSupplier != null) {
-            em.getTransaction().begin();
-
-            selectedSupplier.setSupplierAddress(txtAddress.getText().trim());
-            selectedSupplier.setSupplierMobile(txtMobile.getText().trim());
-            selectedSupplier.setSupplierName(txtName.getText().trim());
-            selectedSupplier.setSupplierEmail(txtEmail.getText().trim());
-            selectedSupplier.setSupplierPhone1(txtTell.getText().trim());
-
-            em.persist(selectedSupplier);
-            em.getTransaction().commit();
-            supList.remove(selectedSupplier);
-            supList.add(selectedSupplier);
-            loadSupplierTable(null);
-            JOptionPane.showMessageDialog(this, "Supplier Updated", "Success", JOptionPane.INFORMATION_MESSAGE);
-            selectedSupplier = null;
-        }
-
-        if (optDelete.isSelected() && selectedSupplier != null) {
-            em.getTransaction().begin();
-
-            em.remove(selectedSupplier);
-            em.getTransaction().commit();
-            supList.remove(selectedSupplier);
-            loadSupplierTable(null);
-            JOptionPane.showMessageDialog(this, "Supplier Deleted", "Success", JOptionPane.INFORMATION_MESSAGE);
-            selectedSupplier = null;
-        }
-        clearALl();
+//        if (txtName.getText().trim().length() == 0) {
+//            JOptionPane.showMessageDialog(this, "You Must Provide A Supplier Name");
+//            return;
+//        }
+//
+//        if (txtMobile.getText().trim().length() == 0) {
+//            JOptionPane.showMessageDialog(this, "You Must Provide A Mobile number");
+//            return;
+//        }
+//
+//        if (optAdd.isSelected()) {
+//            em.getTransaction().begin();
+//            Supplier sup = new Supplier();
+//            sup.setSupplierPK(new SupplierPK());
+//            sup.setSupplierAddress(txtAddress.getText().trim());
+//            sup.setSupplierMobile(txtMobile.getText().trim());
+//            sup.setSupplierName(txtName.getText().trim());
+//            sup.setSupplierEmail(txtEmail.getText().trim());
+//            sup.setSupplierPhone1(txtTell.getText().trim());
+//
+//            em.persist(sup);
+//            em.getTransaction().commit();
+//            supList.add(sup);
+//            loadSupplierTable(null);
+//            JOptionPane.showMessageDialog(this, "Supplier Added", "Success", JOptionPane.INFORMATION_MESSAGE);
+//        }
+//
+//        if (optUpdate.isSelected() && selectedSupplier != null) {
+//            em.getTransaction().begin();
+//
+//            selectedSupplier.setSupplierAddress(txtAddress.getText().trim());
+//            selectedSupplier.setSupplierMobile(txtMobile.getText().trim());
+//            selectedSupplier.setSupplierName(txtName.getText().trim());
+//            selectedSupplier.setSupplierEmail(txtEmail.getText().trim());
+//            selectedSupplier.setSupplierPhone1(txtTell.getText().trim());
+//
+//            em.persist(selectedSupplier);
+//            em.getTransaction().commit();
+//            supList.remove(selectedSupplier);
+//            supList.add(selectedSupplier);
+//            loadSupplierTable(null);
+//            JOptionPane.showMessageDialog(this, "Supplier Updated", "Success", JOptionPane.INFORMATION_MESSAGE);
+//            selectedSupplier = null;
+//        }
+//
+//        if (optDelete.isSelected() && selectedSupplier != null) {
+//            em.getTransaction().begin();
+//
+//            em.remove(selectedSupplier);
+//            em.getTransaction().commit();
+//            supList.remove(selectedSupplier);
+//            loadSupplierTable(null);
+//            JOptionPane.showMessageDialog(this, "Supplier Deleted", "Success", JOptionPane.INFORMATION_MESSAGE);
+//            selectedSupplier = null;
+//        }
+//        clearALl();
 
     }//GEN-LAST:event_btnSaveActionPerformed
 
@@ -345,16 +344,16 @@ public class frmISupplier extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_optUpdateActionPerformed
 
     private void tblMainMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMainMouseClicked
-        if (!optAdd.isSelected() && tblMain.getSelectedRow() > -1) {
-            String name = (String) tblMain.getValueAt(tblMain.getSelectedRow(), 0);
-            selectedSupplier = findSupplier(name);
-            txtAddress.setText(selectedSupplier.getSupplierAddress());
-            txtName.setText(selectedSupplier.getSupplierName());
-            txtMobile.setText(selectedSupplier.getSupplierMobile());
-            txtTell.setText(selectedSupplier.getSupplierPhone1());
-            txtEmail.setText(selectedSupplier.getSupplierEmail());
-
-        }
+//        if (!optAdd.isSelected() && tblMain.getSelectedRow() > -1) {
+//            String name = (String) tblMain.getValueAt(tblMain.getSelectedRow(), 0);
+//            selectedSupplier = findSupplier(name);
+//            txtAddress.setText(selectedSupplier.getSupplierAddress());
+//            txtName.setText(selectedSupplier.getSupplierName());
+//            txtMobile.setText(selectedSupplier.getSupplierMobile());
+//            txtTell.setText(selectedSupplier.getSupplierPhone1());
+//            txtEmail.setText(selectedSupplier.getSupplierEmail());
+//
+//        }
     }//GEN-LAST:event_tblMainMouseClicked
 
     private void txtFindByKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFindByKeyTyped
@@ -366,28 +365,28 @@ public class frmISupplier extends javax.swing.JInternalFrame {
 
     }//GEN-LAST:event_txtFindByKeyReleased
 
-    Supplier findSupplier(String name) {
-        for (Supplier supplier : supList) {
-            if (supplier.getSupplierName().equals(name)) {
-                return supplier;
-            }
-        }
-        return null;
-    }
+//    Supplier findSupplier(String name) {
+//        for (Supplier supplier : supList) {
+//            if (supplier.getSupplierName().equals(name)) {
+//                return supplier;
+//            }
+//        }
+//        return null;
+//    }
 
     void loadSupplierTable(String name) {
 
-        DefaultTableModel tblModel = (DefaultTableModel) tblMain.getModel();
-        tblModel.setRowCount(0);
-        for (Supplier supplier : supList) {
-            if (name == null) {
-                tblModel.addRow(new Object[]{supplier.getSupplierName(), supplier.getSupplierPhone1(), supplier.getSupplierMobile(), supplier.getSupplierAddress(), supplier.getSupplierEmail() });
-
-            } else if (supplier.getSupplierName().toLowerCase().startsWith(name.toLowerCase())) {
-
-                tblModel.addRow(new Object[]{supplier.getSupplierName(), supplier.getSupplierPhone1(), supplier.getSupplierMobile(), supplier.getSupplierAddress(), supplier.getSupplierEmail()});
-            }
-        }
+//        DefaultTableModel tblModel = (DefaultTableModel) tblMain.getModel();
+//        tblModel.setRowCount(0);
+//        for (Supplier supplier : supList) {
+//            if (name == null) {
+//                tblModel.addRow(new Object[]{supplier.getSupplierName(), supplier.getSupplierPhone1(), supplier.getSupplierMobile(), supplier.getSupplierAddress(), supplier.getSupplierEmail() });
+//
+//            } else if (supplier.getSupplierName().toLowerCase().startsWith(name.toLowerCase())) {
+//
+//                tblModel.addRow(new Object[]{supplier.getSupplierName(), supplier.getSupplierPhone1(), supplier.getSupplierMobile(), supplier.getSupplierAddress(), supplier.getSupplierEmail()});
+//            }
+//        }
 
     }
 

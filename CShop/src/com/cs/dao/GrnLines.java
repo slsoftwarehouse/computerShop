@@ -8,10 +8,11 @@ package com.cs.dao;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.CascadeType;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -32,10 +33,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "GrnLines.findAll", query = "SELECT g FROM GrnLines g"),
-    @NamedQuery(name = "GrnLines.findById", query = "SELECT g FROM GrnLines g WHERE g.grnLinesPK.id = :id"),
-    @NamedQuery(name = "GrnLines.findByGrn", query = "SELECT g FROM GrnLines g WHERE g.grnLinesPK.grn = :grn"),
-    @NamedQuery(name = "GrnLines.findByPcode", query = "SELECT g FROM GrnLines g WHERE g.grnLinesPK.pcode = :pcode"),
-    @NamedQuery(name = "GrnLines.findBySerial", query = "SELECT g FROM GrnLines g WHERE g.grnLinesPK.serial = :serial"),
+    @NamedQuery(name = "GrnLines.findById", query = "SELECT g FROM GrnLines g WHERE g.id = :id"),
+    @NamedQuery(name = "GrnLines.findBySerial", query = "SELECT g FROM GrnLines g WHERE g.serial = :serial"),
     @NamedQuery(name = "GrnLines.findByQty", query = "SELECT g FROM GrnLines g WHERE g.qty = :qty"),
     @NamedQuery(name = "GrnLines.findByCostPrice", query = "SELECT g FROM GrnLines g WHERE g.costPrice = :costPrice"),
     @NamedQuery(name = "GrnLines.findByActualCostPrice", query = "SELECT g FROM GrnLines g WHERE g.actualCostPrice = :actualCostPrice"),
@@ -50,8 +49,12 @@ import javax.xml.bind.annotation.XmlTransient;
 public class GrnLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected GrnLinesPK grnLinesPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
+    @Column(name = "serial")
+    private String serial;
     @Column(name = "qty")
     private Integer qty;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -77,55 +80,59 @@ public class GrnLines implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "grnLines")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<SampleLines> sampleLinesList;
-    @JoinColumn(name = "pcode", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Product product;
+    @JoinColumn(name = "pcode", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product pcode;
     @JoinColumn(name = "branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch branch;
-    @JoinColumn(name = "grn", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Grn grn1;
+    @JoinColumn(name = "grn", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Grn grn;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
     @JoinColumn(name = "user_sales", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userSales;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "grnLines")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<BranchTransferLines> branchTransferLinesList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "grnLines")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<JobsLines> jobsLinesList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "grnLines")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<GrnReturnLines> grnReturnLinesList;
-    @OneToMany(mappedBy = "serial")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<ProductBinCard> productBinCardList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "grnLines")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<InvoiceLines> invoiceLinesList;
-    @OneToMany(mappedBy = "backupSerial")
+    @OneToMany(mappedBy = "backupSerial", fetch = FetchType.LAZY)
     private List<Warrranty> warrrantyList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "grnLines")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<Warrranty> warrrantyList1;
 
     public GrnLines() {
     }
 
-    public GrnLines(GrnLinesPK grnLinesPK) {
-        this.grnLinesPK = grnLinesPK;
+    public GrnLines(String id) {
+        this.id = id;
     }
 
-    public GrnLines(String id, String grn, String pcode, String serial) {
-        this.grnLinesPK = new GrnLinesPK(id, grn, pcode, serial);
+    public String getId() {
+        return id;
     }
 
-    public GrnLinesPK getGrnLinesPK() {
-        return grnLinesPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setGrnLinesPK(GrnLinesPK grnLinesPK) {
-        this.grnLinesPK = grnLinesPK;
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
     }
 
     public Integer getQty() {
@@ -225,12 +232,12 @@ public class GrnLines implements Serializable {
         this.sampleLinesList = sampleLinesList;
     }
 
-    public Product getProduct() {
-        return product;
+    public Product getPcode() {
+        return pcode;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setPcode(Product pcode) {
+        this.pcode = pcode;
     }
 
     public Branch getBranch() {
@@ -241,12 +248,12 @@ public class GrnLines implements Serializable {
         this.branch = branch;
     }
 
-    public Grn getGrn1() {
-        return grn1;
+    public Grn getGrn() {
+        return grn;
     }
 
-    public void setGrn1(Grn grn1) {
-        this.grn1 = grn1;
+    public void setGrn(Grn grn) {
+        this.grn = grn;
     }
 
     public Users getUser() {
@@ -331,7 +338,7 @@ public class GrnLines implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (grnLinesPK != null ? grnLinesPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -342,7 +349,7 @@ public class GrnLines implements Serializable {
             return false;
         }
         GrnLines other = (GrnLines) object;
-        if ((this.grnLinesPK == null && other.grnLinesPK != null) || (this.grnLinesPK != null && !this.grnLinesPK.equals(other.grnLinesPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -350,7 +357,7 @@ public class GrnLines implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.GrnLines[ grnLinesPK=" + grnLinesPK + " ]";
+        return "com.cs.dao.GrnLines[ id=" + id + " ]";
     }
     
 }

@@ -10,6 +10,7 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -47,19 +48,19 @@ public class ApplicationConstants implements Serializable {
     private Integer value;
     @Column(name = "text")
     private String text;
-    @OneToMany(mappedBy = "creditNoteStatus")
+    @OneToMany(mappedBy = "creditNoteStatus", fetch = FetchType.LAZY)
     private List<CreditNote> creditNoteList;
-    @OneToMany(mappedBy = "status")
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
     private List<SampleLines> sampleLinesList;
-    @OneToMany(mappedBy = "jobStatus")
+    @OneToMany(mappedBy = "jobStatus", fetch = FetchType.LAZY)
     private List<Jobs> jobsList;
-    @OneToMany(mappedBy = "status")
+    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
     private List<Sample> sampleList;
-    @OneToMany(mappedBy = "statusCode")
+    @OneToMany(mappedBy = "statusCode", fetch = FetchType.LAZY)
     private List<Cheques> chequesList;
-    @OneToMany(mappedBy = "paymentMethod")
+    @OneToMany(mappedBy = "paymentMethod", fetch = FetchType.LAZY)
     private List<Invoice> invoiceList;
-    @OneToMany(mappedBy = "invoiceStatus")
+    @OneToMany(mappedBy = "invoiceStatus", fetch = FetchType.LAZY)
     private List<Invoice> invoiceList1;
 
     public ApplicationConstants() {

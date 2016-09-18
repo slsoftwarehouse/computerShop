@@ -14,11 +14,13 @@ import com.cs.gui.Iframes.frmIRole;
 import com.cs.gui.Iframes.frmISupplier;
 import com.cs.gui.Iframes.frmIUsers;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.swing.JFrame;
 
 import javax.swing.JInternalFrame;
 
@@ -211,7 +213,9 @@ public class frmMain extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new frmMain().setVisible(true);
+                frmMain frm = new  frmMain();
+                frm.setVisible(true);
+                frm.setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
     }

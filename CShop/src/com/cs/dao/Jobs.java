@@ -8,10 +8,11 @@ package com.cs.dao;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.CascadeType;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -32,8 +33,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Jobs.findAll", query = "SELECT j FROM Jobs j"),
-    @NamedQuery(name = "Jobs.findById", query = "SELECT j FROM Jobs j WHERE j.jobsPK.id = :id"),
-    @NamedQuery(name = "Jobs.findByCustomer", query = "SELECT j FROM Jobs j WHERE j.jobsPK.customer = :customer"),
+    @NamedQuery(name = "Jobs.findById", query = "SELECT j FROM Jobs j WHERE j.id = :id"),
     @NamedQuery(name = "Jobs.findByDescription", query = "SELECT j FROM Jobs j WHERE j.description = :description"),
     @NamedQuery(name = "Jobs.findByServiceCharge", query = "SELECT j FROM Jobs j WHERE j.serviceCharge = :serviceCharge"),
     @NamedQuery(name = "Jobs.findByTotalItemBill", query = "SELECT j FROM Jobs j WHERE j.totalItemBill = :totalItemBill"),
@@ -44,8 +44,10 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Jobs implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected JobsPK jobsPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
     @Column(name = "description")
     private String description;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -62,38 +64,34 @@ public class Jobs implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobs")
+    @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
     private List<JobsLines> jobsLinesList;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
-    @JoinColumn(name = "customer", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private com.cs.dao.Entity entity;
+    @JoinColumn(name = "customer", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private com.cs.dao.Entity customer;
     @JoinColumn(name = "job_status", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants jobStatus;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Jobs() {
     }
 
-    public Jobs(JobsPK jobsPK) {
-        this.jobsPK = jobsPK;
+    public Jobs(String id) {
+        this.id = id;
     }
 
-    public Jobs(String id, String customer) {
-        this.jobsPK = new JobsPK(id, customer);
+    public String getId() {
+        return id;
     }
 
-    public JobsPK getJobsPK() {
-        return jobsPK;
-    }
-
-    public void setJobsPK(JobsPK jobsPK) {
-        this.jobsPK = jobsPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getDescription() {
@@ -169,12 +167,12 @@ public class Jobs implements Serializable {
         this.orgBranch = orgBranch;
     }
 
-    public com.cs.dao.Entity getEntity() {
-        return entity;
+    public com.cs.dao.Entity getCustomer() {
+        return customer;
     }
 
-    public void setEntity(com.cs.dao.Entity entity) {
-        this.entity = entity;
+    public void setCustomer(com.cs.dao.Entity customer) {
+        this.customer = customer;
     }
 
     public ApplicationConstants getJobStatus() {
@@ -196,7 +194,7 @@ public class Jobs implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (jobsPK != null ? jobsPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -207,7 +205,7 @@ public class Jobs implements Serializable {
             return false;
         }
         Jobs other = (Jobs) object;
-        if ((this.jobsPK == null && other.jobsPK != null) || (this.jobsPK != null && !this.jobsPK.equals(other.jobsPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -215,7 +213,7 @@ public class Jobs implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Jobs[ jobsPK=" + jobsPK + " ]";
+        return "com.cs.dao.Jobs[ id=" + id + " ]";
     }
     
 }

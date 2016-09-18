@@ -8,10 +8,11 @@ package com.cs.dao;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.CascadeType;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -32,52 +33,49 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Sample.findAll", query = "SELECT s FROM Sample s"),
-    @NamedQuery(name = "Sample.findById", query = "SELECT s FROM Sample s WHERE s.samplePK.id = :id"),
-    @NamedQuery(name = "Sample.findByCustomer", query = "SELECT s FROM Sample s WHERE s.samplePK.customer = :customer"),
+    @NamedQuery(name = "Sample.findById", query = "SELECT s FROM Sample s WHERE s.id = :id"),
     @NamedQuery(name = "Sample.findByDatetime", query = "SELECT s FROM Sample s WHERE s.datetime = :datetime"),
     @NamedQuery(name = "Sample.findByPrefix", query = "SELECT s FROM Sample s WHERE s.prefix = :prefix")})
 public class Sample implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected SamplePK samplePK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "sample1")
+    @OneToMany(mappedBy = "sample", fetch = FetchType.LAZY)
     private List<SampleLines> sampleLinesList;
+    @JoinColumn(name = "customer", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private com.cs.dao.Entity customer;
     @JoinColumn(name = "status", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants status;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
-    @JoinColumn(name = "customer", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private com.cs.dao.Entity entity;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Sample() {
     }
 
-    public Sample(SamplePK samplePK) {
-        this.samplePK = samplePK;
+    public Sample(String id) {
+        this.id = id;
     }
 
-    public Sample(String id, String customer) {
-        this.samplePK = new SamplePK(id, customer);
+    public String getId() {
+        return id;
     }
 
-    public SamplePK getSamplePK() {
-        return samplePK;
-    }
-
-    public void setSamplePK(SamplePK samplePK) {
-        this.samplePK = samplePK;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Date getDatetime() {
@@ -105,6 +103,14 @@ public class Sample implements Serializable {
         this.sampleLinesList = sampleLinesList;
     }
 
+    public com.cs.dao.Entity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(com.cs.dao.Entity customer) {
+        this.customer = customer;
+    }
+
     public ApplicationConstants getStatus() {
         return status;
     }
@@ -121,14 +127,6 @@ public class Sample implements Serializable {
         this.orgBranch = orgBranch;
     }
 
-    public com.cs.dao.Entity getEntity() {
-        return entity;
-    }
-
-    public void setEntity(com.cs.dao.Entity entity) {
-        this.entity = entity;
-    }
-
     public Users getUser() {
         return user;
     }
@@ -140,7 +138,7 @@ public class Sample implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (samplePK != null ? samplePK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -151,7 +149,7 @@ public class Sample implements Serializable {
             return false;
         }
         Sample other = (Sample) object;
-        if ((this.samplePK == null && other.samplePK != null) || (this.samplePK != null && !this.samplePK.equals(other.samplePK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -159,7 +157,7 @@ public class Sample implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Sample[ samplePK=" + samplePK + " ]";
+        return "com.cs.dao.Sample[ id=" + id + " ]";
     }
     
 }

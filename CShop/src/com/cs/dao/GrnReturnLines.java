@@ -7,9 +7,11 @@ package com.cs.dao;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -28,10 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "GrnReturnLines.findAll", query = "SELECT g FROM GrnReturnLines g"),
-    @NamedQuery(name = "GrnReturnLines.findById", query = "SELECT g FROM GrnReturnLines g WHERE g.grnReturnLinesPK.id = :id"),
-    @NamedQuery(name = "GrnReturnLines.findByReturn1", query = "SELECT g FROM GrnReturnLines g WHERE g.grnReturnLinesPK.return1 = :return1"),
-    @NamedQuery(name = "GrnReturnLines.findByProduct", query = "SELECT g FROM GrnReturnLines g WHERE g.grnReturnLinesPK.product = :product"),
-    @NamedQuery(name = "GrnReturnLines.findBySerial", query = "SELECT g FROM GrnReturnLines g WHERE g.grnReturnLinesPK.serial = :serial"),
+    @NamedQuery(name = "GrnReturnLines.findById", query = "SELECT g FROM GrnReturnLines g WHERE g.id = :id"),
     @NamedQuery(name = "GrnReturnLines.findByQty", query = "SELECT g FROM GrnReturnLines g WHERE g.qty = :qty"),
     @NamedQuery(name = "GrnReturnLines.findByCostPrice", query = "SELECT g FROM GrnReturnLines g WHERE g.costPrice = :costPrice"),
     @NamedQuery(name = "GrnReturnLines.findByDatetime", query = "SELECT g FROM GrnReturnLines g WHERE g.datetime = :datetime"),
@@ -39,8 +38,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class GrnReturnLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected GrnReturnLinesPK grnReturnLinesPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
     @Column(name = "qty")
     private Integer qty;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -51,36 +52,32 @@ public class GrnReturnLines implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @JoinColumn(name = "product", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Product product1;
-    @JoinColumn(name = "return", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private GrnReturn grnReturn;
-    @JoinColumn(name = "serial", referencedColumnName = "serial", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private GrnLines grnLines;
+    @JoinColumn(name = "product", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product product;
+    @JoinColumn(name = "return", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GrnReturn return1;
+    @JoinColumn(name = "serial", referencedColumnName = "serial")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public GrnReturnLines() {
     }
 
-    public GrnReturnLines(GrnReturnLinesPK grnReturnLinesPK) {
-        this.grnReturnLinesPK = grnReturnLinesPK;
+    public GrnReturnLines(String id) {
+        this.id = id;
     }
 
-    public GrnReturnLines(String id, String return1, String product, String serial) {
-        this.grnReturnLinesPK = new GrnReturnLinesPK(id, return1, product, serial);
+    public String getId() {
+        return id;
     }
 
-    public GrnReturnLinesPK getGrnReturnLinesPK() {
-        return grnReturnLinesPK;
-    }
-
-    public void setGrnReturnLinesPK(GrnReturnLinesPK grnReturnLinesPK) {
-        this.grnReturnLinesPK = grnReturnLinesPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Integer getQty() {
@@ -115,28 +112,28 @@ public class GrnReturnLines implements Serializable {
         this.prefix = prefix;
     }
 
-    public Product getProduct1() {
-        return product1;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProduct1(Product product1) {
-        this.product1 = product1;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public GrnReturn getGrnReturn() {
-        return grnReturn;
+    public GrnReturn getReturn1() {
+        return return1;
     }
 
-    public void setGrnReturn(GrnReturn grnReturn) {
-        this.grnReturn = grnReturn;
+    public void setReturn1(GrnReturn return1) {
+        this.return1 = return1;
     }
 
-    public GrnLines getGrnLines() {
-        return grnLines;
+    public GrnLines getSerial() {
+        return serial;
     }
 
-    public void setGrnLines(GrnLines grnLines) {
-        this.grnLines = grnLines;
+    public void setSerial(GrnLines serial) {
+        this.serial = serial;
     }
 
     public Users getUser() {
@@ -150,7 +147,7 @@ public class GrnReturnLines implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (grnReturnLinesPK != null ? grnReturnLinesPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -161,7 +158,7 @@ public class GrnReturnLines implements Serializable {
             return false;
         }
         GrnReturnLines other = (GrnReturnLines) object;
-        if ((this.grnReturnLinesPK == null && other.grnReturnLinesPK != null) || (this.grnReturnLinesPK != null && !this.grnReturnLinesPK.equals(other.grnReturnLinesPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -169,7 +166,7 @@ public class GrnReturnLines implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.GrnReturnLines[ grnReturnLinesPK=" + grnReturnLinesPK + " ]";
+        return "com.cs.dao.GrnReturnLines[ id=" + id + " ]";
     }
     
 }

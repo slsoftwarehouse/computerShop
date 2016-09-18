@@ -7,9 +7,11 @@ package com.cs.dao;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -28,50 +30,39 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "SupplierProduct.findAll", query = "SELECT s FROM SupplierProduct s"),
-    @NamedQuery(name = "SupplierProduct.findBySupplier", query = "SELECT s FROM SupplierProduct s WHERE s.supplierProductPK.supplier = :supplier"),
-    @NamedQuery(name = "SupplierProduct.findByProduct", query = "SELECT s FROM SupplierProduct s WHERE s.supplierProductPK.product = :product"),
     @NamedQuery(name = "SupplierProduct.findByDatetime", query = "SELECT s FROM SupplierProduct s WHERE s.datetime = :datetime"),
-    @NamedQuery(name = "SupplierProduct.findByPrefix", query = "SELECT s FROM SupplierProduct s WHERE s.prefix = :prefix")})
+    @NamedQuery(name = "SupplierProduct.findByPrefix", query = "SELECT s FROM SupplierProduct s WHERE s.prefix = :prefix"),
+    @NamedQuery(name = "SupplierProduct.findById", query = "SELECT s FROM SupplierProduct s WHERE s.id = :id")})
 public class SupplierProduct implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected SupplierProductPK supplierProductPK;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
+    @JoinColumn(name = "product", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private Product product;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
-    @JoinColumn(name = "product", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Product product1;
-    @JoinColumn(name = "supplier", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private com.cs.dao.Entity entity;
+    @JoinColumn(name = "supplier", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    private com.cs.dao.Entity supplier;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public SupplierProduct() {
     }
 
-    public SupplierProduct(SupplierProductPK supplierProductPK) {
-        this.supplierProductPK = supplierProductPK;
-    }
-
-    public SupplierProduct(String supplier, String product) {
-        this.supplierProductPK = new SupplierProductPK(supplier, product);
-    }
-
-    public SupplierProductPK getSupplierProductPK() {
-        return supplierProductPK;
-    }
-
-    public void setSupplierProductPK(SupplierProductPK supplierProductPK) {
-        this.supplierProductPK = supplierProductPK;
+    public SupplierProduct(String id) {
+        this.id = id;
     }
 
     public Date getDatetime() {
@@ -90,6 +81,22 @@ public class SupplierProduct implements Serializable {
         this.prefix = prefix;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Product getProduct() {
+        return product;
+    }
+
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+
     public Branch getOrgBranch() {
         return orgBranch;
     }
@@ -98,20 +105,12 @@ public class SupplierProduct implements Serializable {
         this.orgBranch = orgBranch;
     }
 
-    public Product getProduct1() {
-        return product1;
+    public com.cs.dao.Entity getSupplier() {
+        return supplier;
     }
 
-    public void setProduct1(Product product1) {
-        this.product1 = product1;
-    }
-
-    public com.cs.dao.Entity getEntity() {
-        return entity;
-    }
-
-    public void setEntity(com.cs.dao.Entity entity) {
-        this.entity = entity;
+    public void setSupplier(com.cs.dao.Entity supplier) {
+        this.supplier = supplier;
     }
 
     public Users getUser() {
@@ -125,7 +124,7 @@ public class SupplierProduct implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (supplierProductPK != null ? supplierProductPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -136,7 +135,7 @@ public class SupplierProduct implements Serializable {
             return false;
         }
         SupplierProduct other = (SupplierProduct) object;
-        if ((this.supplierProductPK == null && other.supplierProductPK != null) || (this.supplierProductPK != null && !this.supplierProductPK.equals(other.supplierProductPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -144,7 +143,7 @@ public class SupplierProduct implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.SupplierProduct[ supplierProductPK=" + supplierProductPK + " ]";
+        return "com.cs.dao.SupplierProduct[ id=" + id + " ]";
     }
     
 }

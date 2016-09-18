@@ -9,9 +9,9 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Invoice.findAll", query = "SELECT i FROM Invoice i"),
     @NamedQuery(name = "Invoice.findById", query = "SELECT i FROM Invoice i WHERE i.id = :id"),
+    @NamedQuery(name = "Invoice.findByShowinbill", query = "SELECT i FROM Invoice i WHERE i.showinbill = :showinbill"),
     @NamedQuery(name = "Invoice.findByTotalBillable", query = "SELECT i FROM Invoice i WHERE i.totalBillable = :totalBillable"),
     @NamedQuery(name = "Invoice.findByTotalDisscount", query = "SELECT i FROM Invoice i WHERE i.totalDisscount = :totalDisscount"),
     @NamedQuery(name = "Invoice.findByTotalWithoutDisscount", query = "SELECT i FROM Invoice i WHERE i.totalWithoutDisscount = :totalWithoutDisscount"),
@@ -48,6 +49,8 @@ public class Invoice implements Serializable {
     @Basic(optional = false)
     @Column(name = "id")
     private String id;
+    @Column(name = "showinbill")
+    private Boolean showinbill;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "total_billable")
     private Double totalBillable;
@@ -65,27 +68,27 @@ public class Invoice implements Serializable {
     @Column(name = "prefix")
     private String prefix;
     @JoinColumn(name = "approved_user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users approvedUser;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "customer", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private com.cs.dao.Entity customer;
     @JoinColumn(name = "payment_method", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants paymentMethod;
     @JoinColumn(name = "recomended_user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users recomendedUser;
     @JoinColumn(name = "invoice_status", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants invoiceStatus;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "invoice1")
+    @OneToMany(mappedBy = "invoice", fetch = FetchType.LAZY)
     private List<InvoiceLines> invoiceLinesList;
 
     public Invoice() {
@@ -101,6 +104,14 @@ public class Invoice implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Boolean getShowinbill() {
+        return showinbill;
+    }
+
+    public void setShowinbill(Boolean showinbill) {
+        this.showinbill = showinbill;
     }
 
     public Double getTotalBillable() {

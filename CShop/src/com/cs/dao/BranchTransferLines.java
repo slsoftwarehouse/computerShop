@@ -7,9 +7,11 @@ package com.cs.dao;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -28,17 +30,17 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "BranchTransferLines.findAll", query = "SELECT b FROM BranchTransferLines b"),
-    @NamedQuery(name = "BranchTransferLines.findById", query = "SELECT b FROM BranchTransferLines b WHERE b.branchTransferLinesPK.id = :id"),
-    @NamedQuery(name = "BranchTransferLines.findBySerial", query = "SELECT b FROM BranchTransferLines b WHERE b.branchTransferLinesPK.serial = :serial"),
-    @NamedQuery(name = "BranchTransferLines.findByPcode", query = "SELECT b FROM BranchTransferLines b WHERE b.branchTransferLinesPK.pcode = :pcode"),
+    @NamedQuery(name = "BranchTransferLines.findById", query = "SELECT b FROM BranchTransferLines b WHERE b.id = :id"),
     @NamedQuery(name = "BranchTransferLines.findByQty", query = "SELECT b FROM BranchTransferLines b WHERE b.qty = :qty"),
     @NamedQuery(name = "BranchTransferLines.findByDatetime", query = "SELECT b FROM BranchTransferLines b WHERE b.datetime = :datetime"),
     @NamedQuery(name = "BranchTransferLines.findByPrefix", query = "SELECT b FROM BranchTransferLines b WHERE b.prefix = :prefix")})
 public class BranchTransferLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected BranchTransferLinesPK branchTransferLinesPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
     @Column(name = "qty")
     private Integer qty;
     @Column(name = "datetime")
@@ -46,36 +48,32 @@ public class BranchTransferLines implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @JoinColumn(name = "pcode", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Product product;
-    @JoinColumn(name = "serial", referencedColumnName = "serial", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private GrnLines grnLines;
+    @JoinColumn(name = "pcode", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product pcode;
+    @JoinColumn(name = "serial", referencedColumnName = "serial")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GrnLines serial;
     @JoinColumn(name = "transfered_user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users transferedUser;
     @JoinColumn(name = "accepted_user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users acceptedUser;
 
     public BranchTransferLines() {
     }
 
-    public BranchTransferLines(BranchTransferLinesPK branchTransferLinesPK) {
-        this.branchTransferLinesPK = branchTransferLinesPK;
+    public BranchTransferLines(String id) {
+        this.id = id;
     }
 
-    public BranchTransferLines(String id, String serial, String pcode) {
-        this.branchTransferLinesPK = new BranchTransferLinesPK(id, serial, pcode);
+    public String getId() {
+        return id;
     }
 
-    public BranchTransferLinesPK getBranchTransferLinesPK() {
-        return branchTransferLinesPK;
-    }
-
-    public void setBranchTransferLinesPK(BranchTransferLinesPK branchTransferLinesPK) {
-        this.branchTransferLinesPK = branchTransferLinesPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Integer getQty() {
@@ -102,20 +100,20 @@ public class BranchTransferLines implements Serializable {
         this.prefix = prefix;
     }
 
-    public Product getProduct() {
-        return product;
+    public Product getPcode() {
+        return pcode;
     }
 
-    public void setProduct(Product product) {
-        this.product = product;
+    public void setPcode(Product pcode) {
+        this.pcode = pcode;
     }
 
-    public GrnLines getGrnLines() {
-        return grnLines;
+    public GrnLines getSerial() {
+        return serial;
     }
 
-    public void setGrnLines(GrnLines grnLines) {
-        this.grnLines = grnLines;
+    public void setSerial(GrnLines serial) {
+        this.serial = serial;
     }
 
     public Users getTransferedUser() {
@@ -137,7 +135,7 @@ public class BranchTransferLines implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (branchTransferLinesPK != null ? branchTransferLinesPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -148,7 +146,7 @@ public class BranchTransferLines implements Serializable {
             return false;
         }
         BranchTransferLines other = (BranchTransferLines) object;
-        if ((this.branchTransferLinesPK == null && other.branchTransferLinesPK != null) || (this.branchTransferLinesPK != null && !this.branchTransferLinesPK.equals(other.branchTransferLinesPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -156,7 +154,7 @@ public class BranchTransferLines implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.BranchTransferLines[ branchTransferLinesPK=" + branchTransferLinesPK + " ]";
+        return "com.cs.dao.BranchTransferLines[ id=" + id + " ]";
     }
     
 }

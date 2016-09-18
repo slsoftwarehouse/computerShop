@@ -7,9 +7,11 @@ package com.cs.dao;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -28,9 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Warrranty.findAll", query = "SELECT w FROM Warrranty w"),
-    @NamedQuery(name = "Warrranty.findById", query = "SELECT w FROM Warrranty w WHERE w.warrrantyPK.id = :id"),
-    @NamedQuery(name = "Warrranty.findByProduct", query = "SELECT w FROM Warrranty w WHERE w.warrrantyPK.product = :product"),
-    @NamedQuery(name = "Warrranty.findBySerial", query = "SELECT w FROM Warrranty w WHERE w.warrrantyPK.serial = :serial"),
+    @NamedQuery(name = "Warrranty.findById", query = "SELECT w FROM Warrranty w WHERE w.id = :id"),
     @NamedQuery(name = "Warrranty.findByBackupStatus", query = "SELECT w FROM Warrranty w WHERE w.backupStatus = :backupStatus"),
     @NamedQuery(name = "Warrranty.findByReceivedDate", query = "SELECT w FROM Warrranty w WHERE w.receivedDate = :receivedDate"),
     @NamedQuery(name = "Warrranty.findByWarrantyEndDate", query = "SELECT w FROM Warrranty w WHERE w.warrantyEndDate = :warrantyEndDate"),
@@ -43,8 +43,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class Warrranty implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected WarrrantyPK warrrantyPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
     @Column(name = "backup_status")
     private Integer backupStatus;
     @Column(name = "received_date")
@@ -70,38 +72,34 @@ public class Warrranty implements Serializable {
     @Column(name = "prefix")
     private String prefix;
     @JoinColumn(name = "backup_serial", referencedColumnName = "serial")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnLines backupSerial;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
-    @JoinColumn(name = "product", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Product product1;
-    @JoinColumn(name = "serial", referencedColumnName = "serial", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private GrnLines grnLines;
+    @JoinColumn(name = "product", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product product;
+    @JoinColumn(name = "serial", referencedColumnName = "serial")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Warrranty() {
     }
 
-    public Warrranty(WarrrantyPK warrrantyPK) {
-        this.warrrantyPK = warrrantyPK;
+    public Warrranty(String id) {
+        this.id = id;
     }
 
-    public Warrranty(String id, String product, String serial) {
-        this.warrrantyPK = new WarrrantyPK(id, product, serial);
+    public String getId() {
+        return id;
     }
 
-    public WarrrantyPK getWarrrantyPK() {
-        return warrrantyPK;
-    }
-
-    public void setWarrrantyPK(WarrrantyPK warrrantyPK) {
-        this.warrrantyPK = warrrantyPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Integer getBackupStatus() {
@@ -192,20 +190,20 @@ public class Warrranty implements Serializable {
         this.orgBranch = orgBranch;
     }
 
-    public Product getProduct1() {
-        return product1;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProduct1(Product product1) {
-        this.product1 = product1;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public GrnLines getGrnLines() {
-        return grnLines;
+    public GrnLines getSerial() {
+        return serial;
     }
 
-    public void setGrnLines(GrnLines grnLines) {
-        this.grnLines = grnLines;
+    public void setSerial(GrnLines serial) {
+        this.serial = serial;
     }
 
     public Users getUser() {
@@ -219,7 +217,7 @@ public class Warrranty implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (warrrantyPK != null ? warrrantyPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -230,7 +228,7 @@ public class Warrranty implements Serializable {
             return false;
         }
         Warrranty other = (Warrranty) object;
-        if ((this.warrrantyPK == null && other.warrrantyPK != null) || (this.warrrantyPK != null && !this.warrrantyPK.equals(other.warrrantyPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -238,7 +236,7 @@ public class Warrranty implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Warrranty[ warrrantyPK=" + warrrantyPK + " ]";
+        return "com.cs.dao.Warrranty[ id=" + id + " ]";
     }
     
 }

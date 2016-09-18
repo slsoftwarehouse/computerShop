@@ -7,9 +7,11 @@ package com.cs.dao;
 
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -28,10 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "JobsLines.findAll", query = "SELECT j FROM JobsLines j"),
-    @NamedQuery(name = "JobsLines.findById", query = "SELECT j FROM JobsLines j WHERE j.jobsLinesPK.id = :id"),
-    @NamedQuery(name = "JobsLines.findByJob", query = "SELECT j FROM JobsLines j WHERE j.jobsLinesPK.job = :job"),
-    @NamedQuery(name = "JobsLines.findByProduct", query = "SELECT j FROM JobsLines j WHERE j.jobsLinesPK.product = :product"),
-    @NamedQuery(name = "JobsLines.findBySerial", query = "SELECT j FROM JobsLines j WHERE j.jobsLinesPK.serial = :serial"),
+    @NamedQuery(name = "JobsLines.findById", query = "SELECT j FROM JobsLines j WHERE j.id = :id"),
     @NamedQuery(name = "JobsLines.findByOurItem", query = "SELECT j FROM JobsLines j WHERE j.ourItem = :ourItem"),
     @NamedQuery(name = "JobsLines.findByItemBill", query = "SELECT j FROM JobsLines j WHERE j.itemBill = :itemBill"),
     @NamedQuery(name = "JobsLines.findByIswarranty", query = "SELECT j FROM JobsLines j WHERE j.iswarranty = :iswarranty"),
@@ -41,8 +40,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class JobsLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected JobsLinesPK jobsLinesPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
     @Column(name = "our_item")
     private Boolean ourItem;
     @Column(name = "item_bill")
@@ -56,36 +57,32 @@ public class JobsLines implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @JoinColumn(name = "job", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Jobs jobs;
-    @JoinColumn(name = "product", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Product product1;
-    @JoinColumn(name = "serial", referencedColumnName = "serial", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private GrnLines grnLines;
+    @JoinColumn(name = "job", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Jobs job;
+    @JoinColumn(name = "product", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Product product;
+    @JoinColumn(name = "serial", referencedColumnName = "serial")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public JobsLines() {
     }
 
-    public JobsLines(JobsLinesPK jobsLinesPK) {
-        this.jobsLinesPK = jobsLinesPK;
+    public JobsLines(String id) {
+        this.id = id;
     }
 
-    public JobsLines(String id, String job, String product, String serial) {
-        this.jobsLinesPK = new JobsLinesPK(id, job, product, serial);
+    public String getId() {
+        return id;
     }
 
-    public JobsLinesPK getJobsLinesPK() {
-        return jobsLinesPK;
-    }
-
-    public void setJobsLinesPK(JobsLinesPK jobsLinesPK) {
-        this.jobsLinesPK = jobsLinesPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public Boolean getOurItem() {
@@ -136,28 +133,28 @@ public class JobsLines implements Serializable {
         this.prefix = prefix;
     }
 
-    public Jobs getJobs() {
-        return jobs;
+    public Jobs getJob() {
+        return job;
     }
 
-    public void setJobs(Jobs jobs) {
-        this.jobs = jobs;
+    public void setJob(Jobs job) {
+        this.job = job;
     }
 
-    public Product getProduct1() {
-        return product1;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setProduct1(Product product1) {
-        this.product1 = product1;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
-    public GrnLines getGrnLines() {
-        return grnLines;
+    public GrnLines getSerial() {
+        return serial;
     }
 
-    public void setGrnLines(GrnLines grnLines) {
-        this.grnLines = grnLines;
+    public void setSerial(GrnLines serial) {
+        this.serial = serial;
     }
 
     public Users getUser() {
@@ -171,7 +168,7 @@ public class JobsLines implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (jobsLinesPK != null ? jobsLinesPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -182,7 +179,7 @@ public class JobsLines implements Serializable {
             return false;
         }
         JobsLines other = (JobsLines) object;
-        if ((this.jobsLinesPK == null && other.jobsLinesPK != null) || (this.jobsLinesPK != null && !this.jobsLinesPK.equals(other.jobsLinesPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -190,7 +187,7 @@ public class JobsLines implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.JobsLines[ jobsLinesPK=" + jobsLinesPK + " ]";
+        return "com.cs.dao.JobsLines[ id=" + id + " ]";
     }
     
 }

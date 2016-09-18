@@ -8,9 +8,11 @@ package com.cs.dao;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -31,15 +33,15 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Entity.findAll", query = "SELECT e FROM Entity e"),
-    @NamedQuery(name = "Entity.findById", query = "SELECT e FROM Entity e WHERE e.entityPK.id = :id"),
-    @NamedQuery(name = "Entity.findByEntityType", query = "SELECT e FROM Entity e WHERE e.entityPK.entityType = :entityType"),
+    @NamedQuery(name = "Entity.findById", query = "SELECT e FROM Entity e WHERE e.id = :id"),
+    @NamedQuery(name = "Entity.findByEntityType", query = "SELECT e FROM Entity e WHERE e.entityType = :entityType"),
     @NamedQuery(name = "Entity.findByTitile", query = "SELECT e FROM Entity e WHERE e.titile = :titile"),
     @NamedQuery(name = "Entity.findByName", query = "SELECT e FROM Entity e WHERE e.name = :name"),
     @NamedQuery(name = "Entity.findByActive", query = "SELECT e FROM Entity e WHERE e.active = :active"),
     @NamedQuery(name = "Entity.findByContactNumber", query = "SELECT e FROM Entity e WHERE e.contactNumber = :contactNumber"),
     @NamedQuery(name = "Entity.findByLandLine", query = "SELECT e FROM Entity e WHERE e.landLine = :landLine"),
     @NamedQuery(name = "Entity.findByEmail", query = "SELECT e FROM Entity e WHERE e.email = :email"),
-    @NamedQuery(name = "Entity.findByBrn", query = "SELECT e FROM Entity e WHERE e.entityPK.brn = :brn"),
+    @NamedQuery(name = "Entity.findByBrn", query = "SELECT e FROM Entity e WHERE e.brn = :brn"),
     @NamedQuery(name = "Entity.findByCreditLimit", query = "SELECT e FROM Entity e WHERE e.creditLimit = :creditLimit"),
     @NamedQuery(name = "Entity.findByAddress", query = "SELECT e FROM Entity e WHERE e.address = :address"),
     @NamedQuery(name = "Entity.findByDatetime", query = "SELECT e FROM Entity e WHERE e.datetime = :datetime"),
@@ -47,8 +49,12 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Entity implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected EntityPK entityPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
+    @Column(name = "entity_type")
+    private Integer entityType;
     @Column(name = "titile")
     private String titile;
     @Column(name = "name")
@@ -61,6 +67,8 @@ public class Entity implements Serializable {
     private String landLine;
     @Column(name = "email")
     private String email;
+    @Column(name = "BRN")
+    private String brn;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "credit_limit")
     private Double creditLimit;
@@ -71,48 +79,52 @@ public class Entity implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entity")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier", fetch = FetchType.LAZY)
     private List<SupplierProduct> supplierProductList;
-    @OneToMany(mappedBy = "supplier")
+    @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY)
     private List<GrnReturn> grnReturnList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entity1")
+    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
     private List<CreditNote> creditNoteList;
-    @OneToMany(mappedBy = "supplier")
+    @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY)
     private List<Grn> grnList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entity")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Jobs> jobsList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "entity")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Sample> sampleList;
-    @OneToMany(mappedBy = "entity")
+    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
     private List<Cheques> chequesList;
-    @OneToMany(mappedBy = "entity")
+    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
     private List<Accounts> accountsList;
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Invoice> invoiceList;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Entity() {
     }
 
-    public Entity(EntityPK entityPK) {
-        this.entityPK = entityPK;
+    public Entity(String id) {
+        this.id = id;
     }
 
-    public Entity(String id, int entityType, String brn) {
-        this.entityPK = new EntityPK(id, entityType, brn);
+    public String getId() {
+        return id;
     }
 
-    public EntityPK getEntityPK() {
-        return entityPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setEntityPK(EntityPK entityPK) {
-        this.entityPK = entityPK;
+    public Integer getEntityType() {
+        return entityType;
+    }
+
+    public void setEntityType(Integer entityType) {
+        this.entityType = entityType;
     }
 
     public String getTitile() {
@@ -161,6 +173,14 @@ public class Entity implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getBrn() {
+        return brn;
+    }
+
+    public void setBrn(String brn) {
+        this.brn = brn;
     }
 
     public Double getCreditLimit() {
@@ -295,7 +315,7 @@ public class Entity implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (entityPK != null ? entityPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -306,7 +326,7 @@ public class Entity implements Serializable {
             return false;
         }
         Entity other = (Entity) object;
-        if ((this.entityPK == null && other.entityPK != null) || (this.entityPK != null && !this.entityPK.equals(other.entityPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -314,7 +334,7 @@ public class Entity implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Entity[ entityPK=" + entityPK + " ]";
+        return "com.cs.dao.Entity[ id=" + id + " ]";
     }
     
 }

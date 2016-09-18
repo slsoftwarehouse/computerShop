@@ -8,10 +8,12 @@ package com.cs.dao;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
@@ -32,9 +34,8 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Product.findAll", query = "SELECT p FROM Product p"),
-    @NamedQuery(name = "Product.findById", query = "SELECT p FROM Product p WHERE p.productPK.id = :id"),
-    @NamedQuery(name = "Product.findByName", query = "SELECT p FROM Product p WHERE p.productPK.name = :name"),
-    @NamedQuery(name = "Product.findByOrgBranch", query = "SELECT p FROM Product p WHERE p.productPK.orgBranch = :orgBranch"),
+    @NamedQuery(name = "Product.findById", query = "SELECT p FROM Product p WHERE p.id = :id"),
+    @NamedQuery(name = "Product.findByName", query = "SELECT p FROM Product p WHERE p.name = :name"),
     @NamedQuery(name = "Product.findByManagePriceGlobaly", query = "SELECT p FROM Product p WHERE p.managePriceGlobaly = :managePriceGlobaly"),
     @NamedQuery(name = "Product.findByGlobalDealerPrice", query = "SELECT p FROM Product p WHERE p.globalDealerPrice = :globalDealerPrice"),
     @NamedQuery(name = "Product.findByGlobalEnduserPrice", query = "SELECT p FROM Product p WHERE p.globalEnduserPrice = :globalEnduserPrice"),
@@ -47,8 +48,12 @@ import javax.xml.bind.annotation.XmlTransient;
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    @EmbeddedId
-    protected ProductPK productPK;
+    @Id
+    @Basic(optional = false)
+    @Column(name = "id")
+    private String id;
+    @Column(name = "name")
+    private String name;
     @Column(name = "manage_price_globaly")
     private Boolean managePriceGlobaly;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -69,48 +74,52 @@ public class Product implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product", fetch = FetchType.LAZY)
     private List<SupplierProduct> supplierProductList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<SampleLines> sampleLinesList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    @OneToMany(mappedBy = "pcode", fetch = FetchType.LAZY)
     private List<GrnLines> grnLinesList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    @OneToMany(mappedBy = "pcode", fetch = FetchType.LAZY)
     private List<BranchTransferLines> branchTransferLinesList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<JobsLines> jobsLinesList;
-    @JoinColumn(name = "org_branch", referencedColumnName = "id", insertable = false, updatable = false)
-    @ManyToOne(optional = false)
-    private Branch branch;
+    @JoinColumn(name = "org_branch", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Branch orgBranch;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<GrnReturnLines> grnReturnLinesList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductBinCard> productBinCardList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<InvoiceLines> invoiceLinesList;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product1")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<Warrranty> warrrantyList;
 
     public Product() {
     }
 
-    public Product(ProductPK productPK) {
-        this.productPK = productPK;
+    public Product(String id) {
+        this.id = id;
     }
 
-    public Product(String id, String name, int orgBranch) {
-        this.productPK = new ProductPK(id, name, orgBranch);
+    public String getId() {
+        return id;
     }
 
-    public ProductPK getProductPK() {
-        return productPK;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public void setProductPK(ProductPK productPK) {
-        this.productPK = productPK;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Boolean getManagePriceGlobaly() {
@@ -230,12 +239,12 @@ public class Product implements Serializable {
         this.jobsLinesList = jobsLinesList;
     }
 
-    public Branch getBranch() {
-        return branch;
+    public Branch getOrgBranch() {
+        return orgBranch;
     }
 
-    public void setBranch(Branch branch) {
-        this.branch = branch;
+    public void setOrgBranch(Branch orgBranch) {
+        this.orgBranch = orgBranch;
     }
 
     public Users getUser() {
@@ -285,7 +294,7 @@ public class Product implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (productPK != null ? productPK.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 
@@ -296,7 +305,7 @@ public class Product implements Serializable {
             return false;
         }
         Product other = (Product) object;
-        if ((this.productPK == null && other.productPK != null) || (this.productPK != null && !this.productPK.equals(other.productPK))) {
+        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -304,7 +313,7 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Product[ productPK=" + productPK + " ]";
+        return "com.cs.dao.Product[ id=" + id + " ]";
     }
     
 }
