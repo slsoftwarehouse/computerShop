@@ -18,9 +18,16 @@ public class frmICustomer extends javax.swing.JInternalFrame {
     /**
      * Creates new form frmICustomer
      */
-    public frmICustomer() {
+    public frmICustomer(boolean isCustomer) {
         initComponents();
-
+        if(isCustomer){
+         this.setTitle("Customer");
+        }else{
+         this.setTitle("Supplier");
+         jLabel5.setText("BRN");
+        }
+       
+        
     }
 
     

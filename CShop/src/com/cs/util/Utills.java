@@ -5,10 +5,15 @@
  */
 package com.cs.util;
 
+import java.text.DecimalFormat;
+
 /**
  *
  * @author home
  */
-public class NewClass {
-    
+public class Utills {
+    public static String formatDecimal(double in){
+        DecimalFormat df = new DecimalFormat("#.00");
+        return df.format(in);
+    }
 }

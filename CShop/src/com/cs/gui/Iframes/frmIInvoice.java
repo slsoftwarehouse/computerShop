@@ -5,6 +5,7 @@
  */
 package com.cs.gui.Iframes;
 
+import com.cs.dao.Accounts;
 import com.cs.dao.ApplicationConstants;
 import com.cs.dao.Entity;
 import com.cs.dao.Product;
@@ -12,7 +13,10 @@ import com.cs.gui.frmMain;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *
@@ -23,13 +27,44 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
     /**
      * Creates new form frmInvoice
      */
-    
     private final EntityManager em = frmMain.emf.createEntityManager();
+    
+    static String CUSTOMER_QUERY = "SELECT e FROM Entity e WHERE e.entityType =0 and e.active=1 and ";
+    
     private List<Entity> customerList = new ArrayList<Entity>();
     private List<ApplicationConstants> paymentMethodList = new ArrayList<ApplicationConstants>();
     Entity selectedCustomer;
+    
     public frmIInvoice() {
+        
         initComponents();
+        ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Miss");
+        ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Mrs");
+        ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Mr");
+        ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Rev");
+    }
+    
+    void searchCustomer(String searchString) {
+        Query createQuery = em.createQuery(CUSTOMER_QUERY + searchString);
+        createQuery.setMaxResults(1);
+        List<Entity> entity = (List<Entity>) createQuery.getResultList();
+        for (Entity e : entity) {
+            selectedCustomer = e;
+            txtCContactNumber.setText(e.getContactNumber());
+            txtCCreditLimit.setText(e.getCreditLimit().toString());
+            txtCEmail.setText(e.getEmail());
+            ((DefaultComboBoxModel) cboCName.getModel()).addElement(e);
+            txtCNIC.setText(e.getBrn());
+            txtCLandLine.setText(e.getLandLine());
+            cboCTitle.setSelectedItem(e.getTitile());
+            
+            List<Accounts> accountsList = e.getAccountsList();
+            double totalCredit=0;
+            for(Accounts acc : accountsList){
+                totalCredit+=acc.getCredit()-acc.getDebit();
+            }
+            txtCCredit.setText(""+totalCredit);
+        }
     }
 
     /**
@@ -44,7 +79,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
         jLabel1 = new javax.swing.JLabel();
         txtInvoiceNumber = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        cboCTitme = new javax.swing.JComboBox<>();
+        cboCTitle = new javax.swing.JComboBox<>();
         jLabel3 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tblMain = new javax.swing.JTable();
@@ -76,12 +111,11 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
         txtCCreditLimit = new javax.swing.JTextField();
         jLabel16 = new javax.swing.JLabel();
         txtProductCode = new javax.swing.JTextField();
-        btnCSearch = new javax.swing.JButton();
         chkNewCustomer = new javax.swing.JCheckBox();
         chkShowOnBill = new javax.swing.JCheckBox();
         jScrollPane2 = new javax.swing.JScrollPane();
         tblSearchDetails = new javax.swing.JTable();
-        cboCName = new javax.swing.JComboBox<>();
+        cboCName = new javax.swing.JComboBox<Entity>();
         txtCCredit = new javax.swing.JTextField();
         jLabel17 = new javax.swing.JLabel();
 
@@ -158,7 +192,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
 
         jLabel12.setText("Name");
 
-        jLabel4.setText("Contact Number");
+        jLabel4.setText("Mobile");
 
         jLabel13.setText("Land Line");
 
@@ -166,9 +200,13 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
 
         jLabel15.setText("NIC");
 
-        jLabel16.setText("Credit Limit");
+        txtCContactNumber.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCContactNumberActionPerformed(evt);
+            }
+        });
 
-        btnCSearch.setText("Search");
+        jLabel16.setText("Credit Limit");
 
         chkNewCustomer.setText("New Customer");
         chkNewCustomer.addActionListener(new java.awt.event.ActionListener() {
@@ -233,8 +271,8 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(37, 37, 37)
                                 .addComponent(txtCContactNumber))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -243,7 +281,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addComponent(txtInvoiceNumber)
-                                    .addComponent(cboCTitme, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                    .addComponent(cboCTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -258,23 +296,20 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                                 .addComponent(chkShowOnBill)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(chkNewCustomer))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(txtCCredit))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                 .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                    .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                    .addComponent(txtCCredit, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGap(18, 18, 18)
-                                    .addComponent(btnCSearch, javax.swing.GroupLayout.PREFERRED_SIZE, 107, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(txtCEmail)
-                                            .addComponent(txtCNIC, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addComponent(cboCName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                        .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txtCEmail)
+                                        .addComponent(txtCNIC, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(cboCName, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 304, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
@@ -335,7 +370,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGap(0, 3, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(txtInvoiceNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -344,7 +379,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(cboCTitme, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(cboCTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(cboCName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -361,14 +396,12 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel16)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(txtCCreditLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnCSearch))
+                            .addComponent(txtCCreditLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel17)
                                 .addComponent(txtCCredit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 278, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -401,13 +434,16 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_chkShowOnBillActionPerformed
 
+    private void txtCContactNumberActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCContactNumberActionPerformed
+        searchCustomer(" e.contactNumber = " + txtCContactNumber.getText());
+    }//GEN-LAST:event_txtCContactNumberActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCSearch;
     private javax.swing.JButton btnCreateInvoice;
-    private javax.swing.JComboBox<String> cboCName;
+    private javax.swing.JComboBox<Entity> cboCName;
     private javax.swing.JComboBox<String> cboCNote;
-    private javax.swing.JComboBox<String> cboCTitme;
+    private javax.swing.JComboBox<String> cboCTitle;
     private javax.swing.JComboBox<String> cboPaymentMethod;
     private javax.swing.JCheckBox chkNewCustomer;
     private javax.swing.JCheckBox chkShowOnBill;
