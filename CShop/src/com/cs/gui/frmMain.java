@@ -11,10 +11,8 @@ import com.cs.gui.Iframes.frmIInvoice;
 import com.cs.gui.Iframes.frmIProduct;
 import com.cs.gui.Iframes.frmIProductCatagory;
 import com.cs.gui.Iframes.frmIRole;
-import com.cs.gui.Iframes.frmISupplier;
 import com.cs.gui.Iframes.frmIUsers;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.beans.PropertyVetoException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -160,7 +158,7 @@ public class frmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuIProductsActionPerformed
 
     private void mnuICustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuICustomerActionPerformed
-        showIFrame(new frmICustomer(true));
+        showIFrame(new frmICustomer(false));
     }//GEN-LAST:event_mnuICustomerActionPerformed
 
     private void mnuIRolesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIRolesActionPerformed
@@ -180,7 +178,7 @@ public class frmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuIUserActionPerformed
 
     private void mnuISuppluerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuISuppluerActionPerformed
-        showIFrame(new frmISupplier());
+        showIFrame(new frmICustomer(true));
     }//GEN-LAST:event_mnuISuppluerActionPerformed
 
     /**

@@ -5,8 +5,16 @@
  */
 package com.cs.gui.Iframes;
 
+import com.cs.dao.Entity;
+import com.cs.gui.frmMain;
+import java.util.ArrayList;
 import java.util.List;
-
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
+import javax.swing.JOptionPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -14,23 +22,46 @@ import java.util.List;
  */
 public class frmICustomer extends javax.swing.JInternalFrame {
 
+    private final EntityManager em = frmMain.emf.createEntityManager();
+
+    private List<Entity> custList = new ArrayList<>();
+    Entity selectedCust;
 
     /**
      * Creates new form frmICustomer
      */
     public frmICustomer(boolean isCustomer) {
         initComponents();
-        if(isCustomer){
+        
+       if(isCustomer){
          this.setTitle("Customer");
         }else{
          this.setTitle("Supplier");
          jLabel5.setText("BRN");
         }
-       
-        
-    }
+        Query query = em.createNamedQuery("Entity.findAll");
+        custList = (List<Entity>) query.getResultList();
+        loadEntityTable(null);
+        tblMain.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                if (!optAdd.isSelected() && tblMain.getSelectedRow() > -1) {
+                    String name = (String) tblMain.getValueAt(tblMain.getSelectedRow(), 0);
+                    selectedCust = findEntity(name);
+                    txtAddress.setText(selectedCust.getAddress());
+                    txtName.setText(selectedCust.getName());
+                    txtMobile.setText(selectedCust.getContactNumber());
+                    txtTell.setText(selectedCust.getLandLine());
+                    txtEmail.setText(selectedCust.getEmail());
+                    txtCLimit.setText(selectedCust.getCreditLimit() + "");
+                    txtNIC.setText(selectedCust.getBrn());
+                    BooleanToCheck(selectedCust.getActive());
+                    
+                    
+                }
 
-    
+            }
+        });
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -49,7 +80,7 @@ public class frmICustomer extends javax.swing.JInternalFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        txtName1 = new javax.swing.JTextField();
+        txtName = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         txtAddress = new javax.swing.JTextArea();
         txtTell = new javax.swing.JTextField();
@@ -64,13 +95,10 @@ public class frmICustomer extends javax.swing.JInternalFrame {
         jLabel7 = new javax.swing.JLabel();
         cboTitile = new javax.swing.JComboBox<>();
         jLabel8 = new javax.swing.JLabel();
+        txtCLimit = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
-        txtTtotalCLimit = new javax.swing.JTextField();
-        txtTtotalDlimit = new javax.swing.JTextField();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        txtCreditLimit = new javax.swing.JTextField();
-        txtDisscountLimit = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
+        checkActive = new javax.swing.JCheckBox();
 
         setClosable(true);
         setIconifiable(true);
@@ -82,14 +110,14 @@ public class frmICustomer extends javax.swing.JInternalFrame {
 
             },
             new String [] {
-                "ID", "Name", "Address", "Mobile", "Tell", "NIC"
+                "Name", "Address", "Mobile", "Tell", "NIC", "E-mail", "Active"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -108,16 +136,16 @@ public class frmICustomer extends javax.swing.JInternalFrame {
         jScrollPane1.setViewportView(tblMain);
         if (tblMain.getColumnModel().getColumnCount() > 0) {
             tblMain.getColumnModel().getColumn(0).setResizable(false);
-            tblMain.getColumnModel().getColumn(0).setPreferredWidth(10);
+            tblMain.getColumnModel().getColumn(0).setPreferredWidth(30);
             tblMain.getColumnModel().getColumn(1).setResizable(false);
-            tblMain.getColumnModel().getColumn(1).setPreferredWidth(30);
+            tblMain.getColumnModel().getColumn(1).setPreferredWidth(40);
             tblMain.getColumnModel().getColumn(2).setResizable(false);
-            tblMain.getColumnModel().getColumn(2).setPreferredWidth(40);
+            tblMain.getColumnModel().getColumn(2).setPreferredWidth(10);
             tblMain.getColumnModel().getColumn(3).setResizable(false);
             tblMain.getColumnModel().getColumn(3).setPreferredWidth(10);
             tblMain.getColumnModel().getColumn(4).setResizable(false);
-            tblMain.getColumnModel().getColumn(4).setPreferredWidth(10);
             tblMain.getColumnModel().getColumn(5).setResizable(false);
+            tblMain.getColumnModel().getColumn(6).setResizable(false);
         }
 
         jLabel1.setText("Name");
@@ -190,13 +218,16 @@ public class frmICustomer extends javax.swing.JInternalFrame {
             }
         });
 
-        jLabel8.setText("Total Credit Limit");
+        jLabel8.setText("Credit Limit");
 
-        jLabel9.setText("Total Disscount Limit");
+        jLabel9.setText("E-mail");
 
-        jLabel10.setText(" Credit Limit");
-
-        jLabel11.setText("Disscount Limit");
+        checkActive.setText("Active");
+        checkActive.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                checkActiveActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -219,23 +250,13 @@ public class frmICustomer extends javax.swing.JInternalFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel8))
+                        .addComponent(jLabel8)
+                        .addGap(54, 54, 54)
+                        .addComponent(txtCLimit, javax.swing.GroupLayout.PREFERRED_SIZE, 194, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32)
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtTtotalDlimit, javax.swing.GroupLayout.DEFAULT_SIZE, 194, Short.MAX_VALUE)
-                            .addComponent(txtTtotalCLimit))
-                        .addGap(6, 6, 6)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel11)
-                                .addGap(18, 18, 18)
-                                .addComponent(txtDisscountLimit))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel10)
-                                .addGap(29, 29, 29)
-                                .addComponent(txtCreditLimit))))
+                        .addComponent(txtEmail))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -244,25 +265,29 @@ public class frmICustomer extends javax.swing.JInternalFrame {
                             .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(26, 26, 26)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtNIC, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())
-                            .addGroup(layout.createSequentialGroup()
+                            .addComponent(jScrollPane2)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(txtMobile)
-                                        .addGap(10, 10, 10))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(txtMobile)
+                                                .addGap(10, 10, 10))
+                                            .addGroup(layout.createSequentialGroup()
+                                                .addComponent(cboTitile, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(cboTitile, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(txtNIC, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(0, 0, Short.MAX_VALUE)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(txtName1)
-                                    .addComponent(txtTell, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE)))
-                            .addComponent(jScrollPane2)))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(checkActive, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(txtName)
+                                        .addComponent(txtTell, javax.swing.GroupLayout.DEFAULT_SIZE, 229, Short.MAX_VALUE))))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -283,45 +308,36 @@ public class frmICustomer extends javax.swing.JInternalFrame {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel5)
-                            .addComponent(txtNIC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(txtName1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel7)
-                            .addComponent(cboTitile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtTell, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)
-                            .addComponent(txtMobile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel8)
-                            .addComponent(txtTtotalCLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel9)
-                            .addComponent(txtTtotalDlimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel10)
-                            .addComponent(txtCreditLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel11)
-                            .addComponent(txtDisscountLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addComponent(jLabel5)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtNIC, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(checkActive)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel7)
+                    .addComponent(cboTitile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtTell, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4)
+                    .addComponent(txtMobile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel2)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8)
+                    .addComponent(txtCLimit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel9)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnSave)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -332,49 +348,190 @@ public class frmICustomer extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_txtFindByActionPerformed
 
     private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
-       
+         
+
+        if (optAdd.isSelected()) {
+            em.getTransaction().begin();
+            Entity cx = new Entity();
+            cx.setAddress(txtAddress.getText().trim());
+            cx.setContactNumber(txtMobile.getText().trim());
+            cx.setName(txtName.getText().trim());
+            cx.setEmail(txtEmail.getText().trim());
+            cx.setLandLine(txtTell.getText().trim());
+            cx.setBrn(txtNIC.getText().trim());
+            cx.setCreditLimit(Double.parseDouble(txtCLimit.getText().trim()));
+            cx.setActive(checkActive.isSelected());
+
+            em.persist(cx);
+            em.getTransaction().commit();
+            custList.add(cx);
+            loadEntityTable(null);
+            JOptionPane.showMessageDialog(this, "Customer Added", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        if (optUpdate.isSelected() && selectedCust != null) {
+            em.getTransaction().begin();
+
+            selectedCust.setAddress(txtAddress.getText().trim());
+            selectedCust.setContactNumber(txtMobile.getText().trim());
+            selectedCust.setName(txtName.getText().trim());
+            selectedCust.setEmail(txtEmail.getText().trim());
+            selectedCust.setLandLine(txtTell.getText().trim());
+            selectedCust.setBrn(txtNIC.getText().trim());
+            selectedCust.setCreditLimit(Double.parseDouble(txtCLimit.getText().trim()));
+            selectedCust.setActive(checkActive.isSelected());
+            
+
+            em.persist(selectedCust);
+            em.getTransaction().commit();
+            custList.remove(selectedCust);
+            custList.add(selectedCust);
+            loadEntityTable(null);
+            JOptionPane.showMessageDialog(this, "Entity Updated", "Success", JOptionPane.INFORMATION_MESSAGE);
+            selectedCust = null;
+        }
+
+        if (optDelete.isSelected() && selectedCust != null) {
+            em.getTransaction().begin();
+
+            em.remove(selectedCust);
+            em.getTransaction().commit();
+            custList.remove(selectedCust);
+            loadEntityTable(null);
+            JOptionPane.showMessageDialog(this, "Entity Deleted", "Success", JOptionPane.INFORMATION_MESSAGE);
+            selectedCust = null;
+        }
+        clearALl();
 
     }//GEN-LAST:event_btnSaveActionPerformed
 
-    
 
     private void optAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optAddActionPerformed
-        
+        btnSave.setText("Add");
+        clearALl();
     }//GEN-LAST:event_optAddActionPerformed
 
     private void optDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optDeleteActionPerformed
-        
+        btnSave.setText("Delete");
     }//GEN-LAST:event_optDeleteActionPerformed
 
     private void optUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_optUpdateActionPerformed
-        
+        btnSave.setText("Update");
     }//GEN-LAST:event_optUpdateActionPerformed
 
     private void tblMainMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblMainMouseClicked
-        
+        if (!optAdd.isSelected() && tblMain.getSelectedRow() > -1) {
+            String name = (String) tblMain.getValueAt(tblMain.getSelectedRow(), 0);
+            selectedCust = findEntity(name);
+            txtAddress.setText(selectedCust.getAddress());
+            txtName.setText(selectedCust.getName());
+            txtMobile.setText(selectedCust.getContactNumber());
+            txtTell.setText(selectedCust.getLandLine());
+            txtEmail.setText(selectedCust.getEmail());
+            txtNIC.setText(selectedCust.getBrn());
+            txtCLimit.setText(selectedCust.getCreditLimit() + "");
+            BooleanToCheck(checkActive.isSelected());
+
+        }
     }//GEN-LAST:event_tblMainMouseClicked
 
     private void txtFindByKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFindByKeyTyped
-       
+
     }//GEN-LAST:event_txtFindByKeyTyped
 
     private void txtFindByKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFindByKeyReleased
-       
+        loadEntityTable(txtFindBy.getText());
     }//GEN-LAST:event_txtFindByKeyReleased
 
     private void cboTitileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboTitileActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cboTitileActionPerformed
 
+    private void checkActiveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkActiveActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_checkActiveActionPerformed
+
+    Entity findEntity(String name) {
+        for (Entity entity : custList) {
+            if (entity.getName().equals(name)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+    
+    String booleanToString(Boolean val){
+        if(val){
+            return "Y";
+        }else{
+            return "N";
+        }
+    }
+    
+    void BooleanToCheck(Boolean val){
+        if(val){
+            checkActive.setSelected(true);
+        }
+    }
+
+    void loadEntityTable(String name) {
+
+        DefaultTableModel tblModel = (DefaultTableModel) tblMain.getModel();
+        tblModel.setRowCount(0);
+        for (Entity entity : custList) {
+            if (name == null) {
+                tblModel.addRow(new Object[]{entity.getName(), entity.getAddress(), entity.getContactNumber(), entity.getLandLine(), entity.getBrn(), entity.getEmail(), booleanToString(entity.getActive())});
+
+            } else if (entity.getName().toLowerCase().startsWith(name.toLowerCase())) {
+
+                tblModel.addRow(new Object[]{entity.getName(), entity.getAddress(), entity.getContactNumber(), entity.getLandLine(), entity.getBrn(), entity.getEmail(), booleanToString(entity.getActive())});
+            }
+        }
+
+    }
+
+    void enableALl() {
+        txtAddress.setEnabled(true);
+        txtFindBy.setEnabled(true);
+        txtMobile.setEnabled(true);
+        txtTell.setEnabled(true);
+        txtEmail.setEnabled(true);
+        txtCLimit.setEnabled(true);
+        txtNIC.setEnabled(true);
+        checkActive.setEnabled(true);
+    }
+
+    void desableALl() {
+        txtAddress.setEnabled(false);
+        txtFindBy.setEnabled(false);
+        txtMobile.setEnabled(false);
+        txtTell.setEnabled(false);
+        txtEmail.setEnabled(false);
+        txtCLimit.setEnabled(false);
+        txtNIC.setEnabled(false);
+        checkActive.setEnabled(false);
+    }
+
+    void clearALl() {
+        txtName.setText("");
+        txtAddress.setText("");
+        txtFindBy.setText("");
+        txtMobile.setText("");
+        txtTell.setText("");
+        txtEmail.setText("");
+        txtCLimit.setText("");
+        txtNIC.setText("");
+        checkActive.setSelected(false);
+
+    }
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSave;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JComboBox<String> cboTitile;
+    private javax.swing.JCheckBox checkActive;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -390,14 +547,12 @@ public class frmICustomer extends javax.swing.JInternalFrame {
     private javax.swing.JRadioButton optUpdate;
     private javax.swing.JTable tblMain;
     private javax.swing.JTextArea txtAddress;
-    private javax.swing.JTextField txtCreditLimit;
-    private javax.swing.JTextField txtDisscountLimit;
+    private javax.swing.JTextField txtCLimit;
+    private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtFindBy;
     private javax.swing.JTextField txtMobile;
     private javax.swing.JTextField txtNIC;
-    private javax.swing.JTextField txtName1;
+    private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtTell;
-    private javax.swing.JTextField txtTtotalCLimit;
-    private javax.swing.JTextField txtTtotalDlimit;
     // End of variables declaration//GEN-END:variables
 }
