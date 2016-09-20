@@ -17,6 +17,8 @@ import com.cs.util.Utills;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -29,13 +31,15 @@ import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author home
  */
-public class frmIInvoice extends javax.swing.JInternalFrame {
+public class frmIInvoice extends javax.swing.JInternalFrame implements TableModelListener {
 
     /**
      * Creates new form frmInvoice
@@ -245,6 +249,13 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
 
         jLabel5.setText("Disscount");
 
+        txtDisscount.setText("0");
+        txtDisscount.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtDisscountKeyReleased(evt);
+            }
+        });
+
         jLabel6.setText("Total");
 
         jLabel7.setText("SubTotal");
@@ -260,6 +271,11 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
         jLabel9.setText("Payment Method");
 
         btnCreateInvoice.setText("Create Invoice");
+        btnCreateInvoice.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCreateInvoiceActionPerformed(evt);
+            }
+        });
 
         jLabel10.setText("Credit Note Amount");
 
@@ -310,6 +326,8 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                 txtCNICActionPerformed(evt);
             }
         });
+
+        txtCCreditLimit.setText("0");
 
         jLabel16.setText("Credit Limit");
 
@@ -719,6 +737,28 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
         txtCNoteAmount.setText(Utills.formatDecimal(((CreditNote) cboCNote.getSelectedItem()).getTotal()));
     }//GEN-LAST:event_cboCNoteActionPerformed
 
+    private void txtDisscountKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDisscountKeyReleased
+        calculateTotal();
+    }//GEN-LAST:event_txtDisscountKeyReleased
+
+    private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
+
+        try {
+            em.getTransaction().begin();
+            Entity customer = selectedCustomer;
+            if (chkNewCustomer.isSelected()) {
+                 customer = new Entity();
+                 customer.setAddress(txtAddress.getText());
+                 customer.setCreditLimit(Double.parseDouble(txtCCreditLimit.getText()));
+            }
+
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+        }
+
+    }//GEN-LAST:event_btnCreateInvoiceActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateInvoice;
@@ -766,4 +806,43 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
     private javax.swing.JTextField txtSubTotal;
     private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void tableChanged(TableModelEvent e) {
+
+        tblMain.getModel().removeTableModelListener(this);
+        DefaultTableModel dTableModel = (DefaultTableModel) tblMain.getModel();
+        if (tblMain.getSelectedRow() > -1 && tblMain.getRowCount() > 0) {
+            int qty = dTableModel.getValueAt(tblMain.getSelectedRow(), 3) != null ? (int) dTableModel.getValueAt(tblMain.getSelectedRow(), 3) : 0;
+            double price = dTableModel.getValueAt(tblMain.getSelectedRow(), 7) != null ? (double) dTableModel.getValueAt(tblMain.getSelectedRow(), 7) : 0;
+            double total = qty * price;
+            dTableModel.setValueAt(total, tblMain.getSelectedRow(), 9);
+        }
+        tblMain.getModel().addTableModelListener(this);
+        calculateTotal();
+    }
+
+    void calculateTotal() {
+
+        double total = 0;
+        DefaultTableModel dTableModel = (DefaultTableModel) tblMain.getModel();
+
+        double creditNoteAmount = (cboCNote.getSelectedIndex() > -1) ? ((CreditNote) cboCNote.getSelectedItem()).getTotal() : 0;
+
+        for (int i = 0; i < tblMain.getRowCount(); i++) {
+
+            total += (dTableModel.getValueAt(i, 9) != null ? (double) dTableModel.getValueAt(i, 9) : 0.0);
+
+        }
+        double disscount = 0;
+        txtSubTotal.setText(Utills.formatDecimal(total));
+        try {
+            disscount = Double.parseDouble(txtDisscount.getText());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        txtTotal.setText(Utills.formatDecimal(total - disscount - creditNoteAmount));
+
+    }
 }
