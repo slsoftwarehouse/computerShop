@@ -158,7 +158,7 @@ public class frmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuIProductsActionPerformed
 
     private void mnuICustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuICustomerActionPerformed
-        showIFrame(new frmICustomer(false));
+        showIFrame(new frmICustomer(true));
     }//GEN-LAST:event_mnuICustomerActionPerformed
 
     private void mnuIRolesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuIRolesActionPerformed
@@ -178,7 +178,7 @@ public class frmMain extends javax.swing.JFrame {
     }//GEN-LAST:event_mnuIUserActionPerformed
 
     private void mnuISuppluerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuISuppluerActionPerformed
-        showIFrame(new frmICustomer(true));
+        showIFrame(new frmICustomer(false));
     }//GEN-LAST:event_mnuISuppluerActionPerformed
 
     /**
