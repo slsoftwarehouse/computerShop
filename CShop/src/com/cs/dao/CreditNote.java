@@ -202,7 +202,7 @@ public class CreditNote implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.CreditNote[ id=" + id + " ]";
+        return id + "---" + total;
     }
     
 }

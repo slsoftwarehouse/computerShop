@@ -187,7 +187,7 @@ public class ApplicationConstants implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.ApplicationConstants[ id=" + id + " ]";
+        return text;
     }
     
 }
