@@ -282,7 +282,7 @@
                 <Column editable="false" title="Cost" type="java.lang.Double"/>
                 <Column editable="false" title="End User" type="java.lang.Double"/>
                 <Column editable="false" title="Dealer" type="java.lang.Double"/>
-                <Column editable="false" title="Selling" type="java.lang.Double"/>
+                <Column editable="true" title="Selling" type="java.lang.Double"/>
                 <Column editable="true" title="Warranty" type="java.lang.Integer"/>
                 <Column editable="false" title="Total" type="java.lang.Double"/>
                 <Column editable="false" title="" type="java.lang.Object"/>

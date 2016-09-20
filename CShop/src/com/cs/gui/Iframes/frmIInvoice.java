@@ -14,7 +14,6 @@ import com.cs.dao.Product;
 import com.cs.gui.frmMain;
 import com.cs.util.ButtonColumn;
 import com.cs.util.Utills;
-import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -216,7 +215,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false, false, false, false, true, false, false
+                false, false, false, true, false, false, false, true, true, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
