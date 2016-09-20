@@ -756,15 +756,24 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
 
         JComboBox usercbo = new JComboBox();
         JTextField password = new JPasswordField();
-        JComboBox approved = new JComboBox();
-        JComboBox recomended = new JComboBox();
-
-        Object[] message = {
-            "User Name :", usercbo,
-            "Password  :", password,
-            "Recomended By : ", recomended,
-            "Approved By : ", approved
-        };
+        Users appUser = user;
+        Users recuser=user;
+        Object[] message = null;
+        if (((ApplicationConstants) cboPaymentMethod.getSelectedItem()).getValue() == 0) {
+            message = new Object[]{
+                "User Name :", usercbo,
+                "Password  :", password
+            };
+        } else {
+            JComboBox approved = new JComboBox();
+            JComboBox recomended = new JComboBox();
+            message = new Object[]{
+                "User Name :", usercbo,
+                "Password  :", password,
+                "Recomended By : ", recomended,
+                "Approved By : ", approved
+            };
+        }
 
         int option = JOptionPane.showConfirmDialog(null, message, "Please confirm to create the invoice", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
@@ -805,14 +814,13 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                     inv.setPaymentMethod(((ApplicationConstants) cboPaymentMethod.getSelectedItem()));
 
                     //TODO need to promt these details
-                    if (((ApplicationConstants) cboPaymentMethod.getSelectedItem()).getValue() != 0) {
-                        inv.setApprovedUser(user);
-                        inv.setRecomendedUser(user);
-                    }
+                    inv.setApprovedUser(appUser);
+                    inv.setRecomendedUser(recuser);
                     inv.setUser(user);
                     em.persist(inv);
 
                     if (((ApplicationConstants) cboPaymentMethod.getSelectedItem()).getValue() == 0) {
+                        //cash always goes to cash book
                         CashBook cb = new CashBook();
                         cb.setDebit(Double.parseDouble(txtTotal.getText()));
                         cb.setDescription("Cash invoice " + inv.getId());
@@ -822,6 +830,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                         em.persist(cb);
 
                     } else {
+                        //if not cash then add to credit account of the customer
                         Accounts ac = new Accounts();
                         ac.setCredit(Double.parseDouble(txtTotal.getText()));
                         ac.setDescription(cboPaymentMethod.getSelectedItem().toString() + " " + inv.getId());
@@ -834,6 +843,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
 
                     }
 
+                    //update credit note if needed
                     if (cboCNote.getSelectedIndex() > -1) {
                         CreditNote cn = (CreditNote) cboCNote.getSelectedItem();
                         cn.setCreditNoteStatus(new ApplicationConstants(13));
@@ -863,6 +873,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                             dealerPrice = grln.getPcode().getManagePriceGlobaly() == true ? prdToUpdate.getGlobalDealerPrice() : grln.getDealerPrice();
                             aCostPrice = grln.getPcode().getManagePriceGlobaly() == true ? prdToUpdate.getGlobalActualCostPrice() : grln.getActualCostPrice();
 
+                            //update grn lines sales user
                             grln.setUserSales(user);
                             em.persist(grln);
                         } else {
@@ -872,8 +883,9 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                             dealerPrice = prdToUpdate.getGlobalDealerPrice();
                             aCostPrice = prdToUpdate.getGlobalActualCostPrice();
 
-                            //insert to invoice lines
                         }
+
+                        //insert to invoice lines
                         InvoiceLines invl = new InvoiceLines();
                         invl.setActualCostPrice(aCostPrice);
                         invl.setCostPrice(costPrice);
@@ -915,9 +927,9 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                 } catch (Exception e) {
                     em.getTransaction().rollback();
                 }
-            } 
+            }
         } else {
-            System.out.println("Login canceled");
+            JOptionPane.showConfirmDialog(this, "Incorrect user name or password");
         }
 
 
