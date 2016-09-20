@@ -7,20 +7,30 @@ package com.cs.gui.Iframes;
 
 import com.cs.dao.Accounts;
 import com.cs.dao.ApplicationConstants;
+import com.cs.dao.CreditNote;
 import com.cs.dao.Entity;
+import com.cs.dao.GrnLines;
+import com.cs.dao.Product;
 import com.cs.gui.frmMain;
+import com.cs.util.ButtonColumn;
 import com.cs.util.Utills;
+import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -34,7 +44,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
     private final EntityManager em = frmMain.emf.createEntityManager();
 
     static String CUSTOMER_QUERY = "SELECT e FROM Entity e WHERE e.entityType =0 and e.active=1";
-
+    static String PRODUCT_QUERY = "SELECT p FROM Product p WHERE p.name like :name";
     private List<Entity> customerList = new ArrayList<Entity>();
     private List<ApplicationConstants> paymentMethodList = new ArrayList<ApplicationConstants>();
     Entity selectedCustomer;
@@ -46,11 +56,28 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
         ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Mrs");
         ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Mr");
         ((DefaultComboBoxModel) cboCTitle.getModel()).addElement("Rev");
+        Action delete = new AbstractAction() {
+            public void actionPerformed(ActionEvent e) {
+                JTable table = (JTable) e.getSource();
+                int modelRow = Integer.valueOf(e.getActionCommand());
+                ((DefaultTableModel) table.getModel()).removeRow(modelRow);
+            }
+        };
+
+        ButtonColumn buttonColumn = new ButtonColumn(tblMain, delete, 10);
+        buttonColumn.setMnemonic(KeyEvent.VK_D);
+
+        Query createQueryP = em.createNamedQuery("ApplicationConstants.findByFieldName");
+        createQueryP.setParameter("fieldName", "payment_method");
+        createQueryP.setMaxResults(5);
+        List<ApplicationConstants> paymentMethods = (List<ApplicationConstants>) createQueryP.getResultList();
+        for (ApplicationConstants pm : paymentMethods) {
+            ((DefaultComboBoxModel) cboPaymentMethod.getModel()).addElement(pm);
+        }
 
     }
 
     void setCustomerFileds(Entity e) {
-
         txtCContactNumber.setText(e.getContactNumber());
         txtCCreditLimit.setText(Utills.formatDecimal(e.getCreditLimit()));
         txtCEmail.setText(e.getEmail());
@@ -76,8 +103,18 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
         for (Entity e : entity) {
             selectedCustomer = e;
             setCustomerFileds(e);
+            Query createQueryC = em.createNamedQuery("CreditNote.findByEntityReferance");
+            createQueryC.setParameter("entityReferance", selectedCustomer.getId());
+            createQueryC.setMaxResults(5);
+            List<CreditNote> creditNotes = (List<CreditNote>) createQueryC.getResultList();
+            for (CreditNote crn : creditNotes) {
+                if (crn.getCreditNoteStatus().getValue() == 0) {
+                    ((DefaultComboBoxModel) cboCNote.getModel()).addElement(crn);
+                }
 
+            }
         }
+
     }
 
     void searchCustomerByName(String searchString) {
@@ -198,17 +235,13 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
             tblMain.getColumnModel().getColumn(2).setPreferredWidth(100);
             tblMain.getColumnModel().getColumn(3).setResizable(false);
             tblMain.getColumnModel().getColumn(3).setPreferredWidth(50);
-            tblMain.getColumnModel().getColumn(3).setHeaderValue("QTY");
             tblMain.getColumnModel().getColumn(4).setResizable(false);
             tblMain.getColumnModel().getColumn(5).setResizable(false);
             tblMain.getColumnModel().getColumn(6).setResizable(false);
             tblMain.getColumnModel().getColumn(7).setResizable(false);
-            tblMain.getColumnModel().getColumn(7).setHeaderValue("Selling");
             tblMain.getColumnModel().getColumn(8).setResizable(false);
             tblMain.getColumnModel().getColumn(9).setResizable(false);
-            tblMain.getColumnModel().getColumn(9).setHeaderValue("Total");
             tblMain.getColumnModel().getColumn(10).setResizable(false);
-            tblMain.getColumnModel().getColumn(10).setHeaderValue("");
         }
 
         jLabel5.setText("Disscount");
@@ -219,13 +252,31 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
 
         jLabel8.setText("Credit Notes");
 
+        cboCNote.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboCNoteActionPerformed(evt);
+            }
+        });
+
         jLabel9.setText("Payment Method");
 
         btnCreateInvoice.setText("Create Invoice");
 
         jLabel10.setText("Credit Note Amount");
 
+        txtProductSrial.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtProductSrialActionPerformed(evt);
+            }
+        });
+
         jLabel11.setText("Serial");
+
+        txtProductName.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                txtProductNameKeyReleased(evt);
+            }
+        });
 
         jLabel12.setText("Name");
 
@@ -263,6 +314,12 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
 
         jLabel16.setText("Credit Limit");
 
+        txtProductCode.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtProductCodeActionPerformed(evt);
+            }
+        });
+
         chkNewCustomer.setText("New Customer");
         chkNewCustomer.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -298,6 +355,11 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
                 return canEdit [columnIndex];
+            }
+        });
+        tblSearchDetails.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblSearchDetailsMouseClicked(evt);
             }
         });
         jScrollPane2.setViewportView(tblSearchDetails);
@@ -382,24 +444,25 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                                             .addComponent(txtCCreditLimit, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE)
                                             .addComponent(txtCLandLine, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))))
                                 .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                            .addComponent(txtCCredit))
+                                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                                                .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                .addComponent(txtCEmail)
+                                                .addComponent(txtCNIC, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addComponent(txtCName))
                                     .addGroup(layout.createSequentialGroup()
                                         .addComponent(chkShowOnBill)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(chkNewCustomer))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(txtCCredit))
-                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                            .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(txtCEmail)
-                                            .addComponent(txtCNIC, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                    .addComponent(txtCName)))
+                                        .addComponent(chkNewCustomer))))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel18, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -433,14 +496,14 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                             .addComponent(txtProductSrial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtProductName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel12)
-                            .addComponent(txtProductCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtProductCode, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(chkNewCustomer))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(txtInvoiceNumber, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(chkNewCustomer)
                             .addComponent(chkShowOnBill))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -543,7 +606,6 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
     }
     private void txtCNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCNameActionPerformed
 
-        
         final JButton okay = new JButton("Ok");
         okay.addActionListener(new ActionListener() {
             @Override
@@ -551,12 +613,12 @@ public class frmIInvoice extends javax.swing.JInternalFrame {
                 JOptionPane pane = getOptionPane((JComponent) e.getSource());
                 pane.setValue(okay);
                 if (txtCName.getText().length() > 0) {
-                searchCustomer(" and e.name = :name", "name", txtCName.getText());
-            }
+                    searchCustomer(" and e.name = :name", "name", txtCName.getText());
+                }
             }
         });
-        JPanel p = new pnlSearch(CUSTOMER_QUERY + " and e.name LIKE :name", txtCName, "name",okay);
-JOptionPane.showOptionDialog(null, p, "Search Customer", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[]{okay}, okay);
+        JPanel p = new pnlSearch(CUSTOMER_QUERY + " and e.name LIKE :name", txtCName, "name", okay);
+        JOptionPane.showOptionDialog(null, p, "Search Customer", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, new Object[]{okay}, okay);
 //
 //        if (JOptionPane.showConfirmDialog(null, p, "Search Customer", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE) == JOptionPane.YES_OPTION) {
 //
@@ -566,12 +628,104 @@ JOptionPane.showOptionDialog(null, p, "Search Customer", JOptionPane.YES_NO_OPTI
 
     }//GEN-LAST:event_txtCNameActionPerformed
 
+    private void txtProductSrialActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtProductSrialActionPerformed
+        addBySerial(txtProductSrial.getText());
+
+    }//GEN-LAST:event_txtProductSrialActionPerformed
+
+    private void txtProductCodeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtProductCodeActionPerformed
+        addByCode(txtProductCode.getText());
+
+    }//GEN-LAST:event_txtProductCodeActionPerformed
+
+    void addBySerial(String serial) {
+        Query createQuery = em.createNamedQuery("GrnLines.findBySerial");
+        createQuery.setParameter("serial", serial);
+        createQuery.setMaxResults(1);
+        List<GrnLines> grnLine = (List<GrnLines>) createQuery.getResultList();
+        if (grnLine.size() > 0) {
+            GrnLines grnl = grnLine.iterator().next();
+            double costPrice = grnl.getPcode().getManagePriceGlobaly() == true ? grnl.getPcode().getGlobslCostPrice() : grnl.getCostPrice();
+            double endUserPrice = grnl.getPcode().getManagePriceGlobaly() == true ? grnl.getPcode().getGlobalEnduserPrice() : grnl.getEndUserPrice();
+            double dealerPrice = grnl.getPcode().getManagePriceGlobaly() == true ? grnl.getPcode().getGlobalDealerPrice() : grnl.getDealerPrice();
+
+            Utills.addRowToTable(tblMain, new Object[]{grnl.getPcode().getId(), grnl.getSerial(), grnl.getPcode().getName(), 1, costPrice, endUserPrice, dealerPrice, grnl.getEndUserPrice(), grnl.getWarrantyInMonths(), endUserPrice, "-"});
+        } else {
+            JOptionPane.showMessageDialog(this, "Serial Not Found");
+        }
+    }
+
+    void addByCode(String code) {
+        Query createQuery = em.createNamedQuery("Product.findById");
+        createQuery.setParameter("id", code);
+        createQuery.setMaxResults(1);
+        List<Product> prd = (List<Product>) createQuery.getResultList();
+
+        if (prd.size() > 0) {
+            Product pr = prd.iterator().next();
+            try {
+                int qty = Integer.parseInt(JOptionPane.showInputDialog("Please provide the qty"));
+                double total = pr.getGlobalEnduserPrice() * qty;
+                Utills.addRowToTable(tblMain, new Object[]{pr.getId(), "", pr.getName(), qty, pr.getGlobslCostPrice(), pr.getGlobalEnduserPrice(), pr.getGlobalDealerPrice(), pr.getGlobalEnduserPrice(), 0, total, "-"});
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Product Code Not Found");
+        }
+    }
+
+
+    private void txtProductNameKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtProductNameKeyReleased
+        String searchKey = txtProductName.getText();
+        Query createQuery = frmMain.emf.createEntityManager().createQuery(PRODUCT_QUERY);
+        createQuery.setParameter("name", searchKey + "%");
+        createQuery.setMaxResults(20);
+        List<Product> prdl = createQuery.getResultList();
+        Utills.clearTable(tblSearchDetails);
+
+        for (Product pr : prdl) {
+            List<GrnLines> grnLine = pr.getGrnLinesList();
+
+            if (grnLine.size() == 0) {
+                Utills.addRowToTable(tblSearchDetails, new Object[]{pr.getId(), "", pr.getName(), pr.getGlobslCostPrice(), pr.getGlobalEnduserPrice(), pr.getGlobalDealerPrice(), 0});
+
+            } else {
+
+                for (GrnLines grnl : grnLine) {
+                    double costPrice = pr.getManagePriceGlobaly() == true ? pr.getGlobslCostPrice() : grnl.getCostPrice();
+                    double endUserPrice = pr.getManagePriceGlobaly() == true ? pr.getGlobalEnduserPrice() : grnl.getEndUserPrice();
+                    double dealerPrice = pr.getManagePriceGlobaly() == true ? pr.getGlobalDealerPrice() : grnl.getDealerPrice();
+                    Utills.addRowToTable(tblSearchDetails, new Object[]{grnl.getPcode().getId(), grnl.getSerial(), pr.getName(), costPrice, endUserPrice, dealerPrice, endUserPrice, grnl.getWarrantyInMonths()});
+                }
+            }
+
+        }
+    }//GEN-LAST:event_txtProductNameKeyReleased
+
+    private void tblSearchDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSearchDetailsMouseClicked
+        if (evt.getClickCount() == 2 && tblSearchDetails.getSelectedRow() > -1) {
+            String code = tblSearchDetails.getModel().getValueAt(tblSearchDetails.getSelectedRow(), 0).toString();
+            String serial = tblSearchDetails.getModel().getValueAt(tblSearchDetails.getSelectedRow(), 0).toString();
+            if (serial.length() > 1) {
+                addBySerial(serial);
+            } else {
+                addByCode(code);
+            }
+        }
+    }//GEN-LAST:event_tblSearchDetailsMouseClicked
+
+    private void cboCNoteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboCNoteActionPerformed
+        txtCNoteAmount.setText(Utills.formatDecimal(((CreditNote) cboCNote.getSelectedItem()).getTotal()));
+    }//GEN-LAST:event_cboCNoteActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCreateInvoice;
-    private javax.swing.JComboBox<String> cboCNote;
+    private javax.swing.JComboBox<CreditNote> cboCNote;
     private javax.swing.JComboBox<String> cboCTitle;
-    private javax.swing.JComboBox<String> cboPaymentMethod;
+    private javax.swing.JComboBox<ApplicationConstants> cboPaymentMethod;
     private javax.swing.JCheckBox chkNewCustomer;
     private javax.swing.JCheckBox chkShowOnBill;
     private javax.swing.JLabel jLabel1;
