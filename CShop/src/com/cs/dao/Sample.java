@@ -11,7 +11,6 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -48,19 +47,19 @@ public class Sample implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(mappedBy = "sample", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "sample")
     private List<SampleLines> sampleLinesList;
     @JoinColumn(name = "customer", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private com.cs.dao.Entity customer;
     @JoinColumn(name = "status", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private ApplicationConstants status;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch orgBranch;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
 
     public Sample() {

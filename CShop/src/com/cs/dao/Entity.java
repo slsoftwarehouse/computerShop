@@ -11,7 +11,6 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -79,29 +78,29 @@ public class Entity implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier", fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier")
     private List<SupplierProduct> supplierProductList;
-    @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "supplier")
     private List<GrnReturn> grnReturnList;
-    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "entity")
     private List<CreditNote> creditNoteList;
-    @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "supplier")
     private List<Grn> grnList;
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer")
     private List<Jobs> jobsList;
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer")
     private List<Sample> sampleList;
-    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "entity")
     private List<Cheques> chequesList;
-    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "entity")
     private List<Accounts> accountsList;
-    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "customer")
     private List<Invoice> invoiceList;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch orgBranch;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
 
     public Entity() {

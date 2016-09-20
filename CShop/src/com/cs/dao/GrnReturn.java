@@ -11,7 +11,6 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -53,18 +52,18 @@ public class GrnReturn implements Serializable {
     @Column(name = "prefix")
     private String prefix;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch orgBranch;
     @JoinColumn(name = "credit_note", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private CreditNote creditNote;
     @JoinColumn(name = "supplier", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private com.cs.dao.Entity supplier;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
-    @OneToMany(mappedBy = "return1", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "return1")
     private List<GrnReturnLines> grnReturnLinesList;
 
     public GrnReturn() {

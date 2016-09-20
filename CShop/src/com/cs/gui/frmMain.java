@@ -6,6 +6,7 @@
 package com.cs.gui;
 
 
+import com.cs.dao.Branch;
 import com.cs.gui.Iframes.frmICustomer;
 import com.cs.gui.Iframes.frmIInvoice;
 import com.cs.gui.Iframes.frmIProduct;
@@ -29,7 +30,8 @@ import javax.swing.JInternalFrame;
  */
 public class frmMain extends javax.swing.JFrame {
     public static EntityManagerFactory emf = Persistence.createEntityManagerFactory("CShopPU");
-   
+    public static Branch brn = new Branch(1);
+    public static String prefix = "H";
     /**
      * Creates new form frmMain
      */

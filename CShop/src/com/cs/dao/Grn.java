@@ -11,7 +11,6 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -55,19 +54,22 @@ public class Grn implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(mappedBy = "grn", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "grn")
     private List<GrnLines> grnLinesList;
+    @JoinColumn(name = "payment_method", referencedColumnName = "id")
+    @ManyToOne
+    private ApplicationConstants paymentMethod;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch orgBranch;
     @JoinColumn(name = "credit_note", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private CreditNote creditNote;
     @JoinColumn(name = "supplier", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private com.cs.dao.Entity supplier;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
 
     public Grn() {
@@ -124,6 +126,14 @@ public class Grn implements Serializable {
 
     public void setGrnLinesList(List<GrnLines> grnLinesList) {
         this.grnLinesList = grnLinesList;
+    }
+
+    public ApplicationConstants getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(ApplicationConstants paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
     public Branch getOrgBranch() {

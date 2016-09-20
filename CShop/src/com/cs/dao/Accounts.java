@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,7 +34,6 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Accounts.findByCredit", query = "SELECT a FROM Accounts a WHERE a.credit = :credit"),
     @NamedQuery(name = "Accounts.findByDebit", query = "SELECT a FROM Accounts a WHERE a.debit = :debit"),
     @NamedQuery(name = "Accounts.findByDescription", query = "SELECT a FROM Accounts a WHERE a.description = :description"),
-    @NamedQuery(name = "Accounts.findByOrgBranch", query = "SELECT a FROM Accounts a WHERE a.orgBranch = :orgBranch"),
     @NamedQuery(name = "Accounts.findByDatetime", query = "SELECT a FROM Accounts a WHERE a.datetime = :datetime"),
     @NamedQuery(name = "Accounts.findByPrefix", query = "SELECT a FROM Accounts a WHERE a.prefix = :prefix")})
 public class Accounts implements Serializable {
@@ -54,18 +52,19 @@ public class Accounts implements Serializable {
     private Double debit;
     @Column(name = "Description")
     private String description;
-    @Column(name = "org_branch")
-    private String orgBranch;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
+    @JoinColumn(name = "org_branch", referencedColumnName = "id")
+    @ManyToOne
+    private Branch orgBranch;
     @JoinColumn(name = "entity", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private com.cs.dao.Entity entity;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
 
     public Accounts() {
@@ -115,14 +114,6 @@ public class Accounts implements Serializable {
         this.description = description;
     }
 
-    public String getOrgBranch() {
-        return orgBranch;
-    }
-
-    public void setOrgBranch(String orgBranch) {
-        this.orgBranch = orgBranch;
-    }
-
     public Date getDatetime() {
         return datetime;
     }
@@ -137,6 +128,14 @@ public class Accounts implements Serializable {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public Branch getOrgBranch() {
+        return orgBranch;
+    }
+
+    public void setOrgBranch(Branch orgBranch) {
+        this.orgBranch = orgBranch;
     }
 
     public com.cs.dao.Entity getEntity() {

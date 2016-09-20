@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -53,16 +52,16 @@ public class GrnReturnLines implements Serializable {
     @Column(name = "prefix")
     private String prefix;
     @JoinColumn(name = "product", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Product product;
     @JoinColumn(name = "return", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private GrnReturn return1;
     @JoinColumn(name = "serial", referencedColumnName = "serial")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
 
     public GrnReturnLines() {

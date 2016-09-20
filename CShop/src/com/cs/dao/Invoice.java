@@ -11,7 +11,6 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -68,27 +67,27 @@ public class Invoice implements Serializable {
     @Column(name = "prefix")
     private String prefix;
     @JoinColumn(name = "approved_user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users approvedUser;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch orgBranch;
     @JoinColumn(name = "customer", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private com.cs.dao.Entity customer;
     @JoinColumn(name = "payment_method", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private ApplicationConstants paymentMethod;
     @JoinColumn(name = "recomended_user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users recomendedUser;
     @JoinColumn(name = "invoice_status", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private ApplicationConstants invoiceStatus;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
-    @OneToMany(mappedBy = "invoice", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "invoice")
     private List<InvoiceLines> invoiceLinesList;
 
     public Invoice() {

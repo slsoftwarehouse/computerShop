@@ -11,7 +11,6 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -40,7 +39,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "GrnLines.findByActualCostPrice", query = "SELECT g FROM GrnLines g WHERE g.actualCostPrice = :actualCostPrice"),
     @NamedQuery(name = "GrnLines.findByEndUserPrice", query = "SELECT g FROM GrnLines g WHERE g.endUserPrice = :endUserPrice"),
     @NamedQuery(name = "GrnLines.findByDealerPrice", query = "SELECT g FROM GrnLines g WHERE g.dealerPrice = :dealerPrice"),
-    @NamedQuery(name = "GrnLines.findByWarrantyInMonths", query = "SELECT g FROM GrnLines g WHERE g.warrantyInMonths = :warrantyInMonths"),
+    @NamedQuery(name = "GrnLines.findByWarrantyInDays", query = "SELECT g FROM GrnLines g WHERE g.warrantyInDays = :warrantyInDays"),
     @NamedQuery(name = "GrnLines.findByWarrantyenddate", query = "SELECT g FROM GrnLines g WHERE g.warrantyenddate = :warrantyenddate"),
     @NamedQuery(name = "GrnLines.findByIsDamage", query = "SELECT g FROM GrnLines g WHERE g.isDamage = :isDamage"),
     @NamedQuery(name = "GrnLines.findByDamageUpdatedUser", query = "SELECT g FROM GrnLines g WHERE g.damageUpdatedUser = :damageUpdatedUser"),
@@ -66,8 +65,8 @@ public class GrnLines implements Serializable {
     private Double endUserPrice;
     @Column(name = "dealer_price")
     private Double dealerPrice;
-    @Column(name = "warranty_in_months")
-    private Integer warrantyInMonths;
+    @Column(name = "warranty_in_days")
+    private Integer warrantyInDays;
     @Column(name = "Warranty_end_date")
     @Temporal(TemporalType.DATE)
     private Date warrantyenddate;
@@ -80,36 +79,36 @@ public class GrnLines implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "serial")
     private List<SampleLines> sampleLinesList;
     @JoinColumn(name = "pcode", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Product pcode;
     @JoinColumn(name = "branch", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch branch;
     @JoinColumn(name = "grn", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Grn grn;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
     @JoinColumn(name = "user_sales", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users userSales;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "serial")
     private List<BranchTransferLines> branchTransferLinesList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "serial")
     private List<JobsLines> jobsLinesList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "serial")
     private List<GrnReturnLines> grnReturnLinesList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "serial")
     private List<ProductBinCard> productBinCardList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "serial")
     private List<InvoiceLines> invoiceLinesList;
-    @OneToMany(mappedBy = "backupSerial", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "backupSerial")
     private List<Warrranty> warrrantyList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "serial")
     private List<Warrranty> warrrantyList1;
 
     public GrnLines() {
@@ -175,12 +174,12 @@ public class GrnLines implements Serializable {
         this.dealerPrice = dealerPrice;
     }
 
-    public Integer getWarrantyInMonths() {
-        return warrantyInMonths;
+    public Integer getWarrantyInDays() {
+        return warrantyInDays;
     }
 
-    public void setWarrantyInMonths(Integer warrantyInMonths) {
-        this.warrantyInMonths = warrantyInMonths;
+    public void setWarrantyInDays(Integer warrantyInDays) {
+        this.warrantyInDays = warrantyInDays;
     }
 
     public Date getWarrantyenddate() {

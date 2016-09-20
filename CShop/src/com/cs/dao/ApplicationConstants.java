@@ -10,7 +10,6 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -48,19 +47,21 @@ public class ApplicationConstants implements Serializable {
     private Integer value;
     @Column(name = "text")
     private String text;
-    @OneToMany(mappedBy = "creditNoteStatus", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "creditNoteStatus")
     private List<CreditNote> creditNoteList;
-    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "status")
     private List<SampleLines> sampleLinesList;
-    @OneToMany(mappedBy = "jobStatus", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "paymentMethod")
+    private List<Grn> grnList;
+    @OneToMany(mappedBy = "jobStatus")
     private List<Jobs> jobsList;
-    @OneToMany(mappedBy = "status", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "status")
     private List<Sample> sampleList;
-    @OneToMany(mappedBy = "statusCode", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "statusCode")
     private List<Cheques> chequesList;
-    @OneToMany(mappedBy = "paymentMethod", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "paymentMethod")
     private List<Invoice> invoiceList;
-    @OneToMany(mappedBy = "invoiceStatus", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "invoiceStatus")
     private List<Invoice> invoiceList1;
 
     public ApplicationConstants() {
@@ -118,6 +119,15 @@ public class ApplicationConstants implements Serializable {
 
     public void setSampleLinesList(List<SampleLines> sampleLinesList) {
         this.sampleLinesList = sampleLinesList;
+    }
+
+    @XmlTransient
+    public List<Grn> getGrnList() {
+        return grnList;
+    }
+
+    public void setGrnList(List<Grn> grnList) {
+        this.grnList = grnList;
     }
 
     @XmlTransient

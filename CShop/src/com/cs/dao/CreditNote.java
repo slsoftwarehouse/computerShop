@@ -11,7 +11,6 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -58,21 +57,21 @@ public class CreditNote implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(mappedBy = "creditNote", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "creditNote")
     private List<GrnReturn> grnReturnList;
     @JoinColumn(name = "entity", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private com.cs.dao.Entity entity;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch orgBranch;
     @JoinColumn(name = "credit_note_status", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private ApplicationConstants creditNoteStatus;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
-    @OneToMany(mappedBy = "creditNote", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "creditNote")
     private List<Grn> grnList;
 
     public CreditNote() {
@@ -202,7 +201,7 @@ public class CreditNote implements Serializable {
 
     @Override
     public String toString() {
-        return id + "---" + total;
+        return id + "--" + total;
     }
     
 }

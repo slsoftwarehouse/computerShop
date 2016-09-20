@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -49,16 +48,16 @@ public class BranchTransferLines implements Serializable {
     @Column(name = "prefix")
     private String prefix;
     @JoinColumn(name = "pcode", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Product pcode;
     @JoinColumn(name = "serial", referencedColumnName = "serial")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private GrnLines serial;
     @JoinColumn(name = "transfered_user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users transferedUser;
     @JoinColumn(name = "accepted_user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users acceptedUser;
 
     public BranchTransferLines() {

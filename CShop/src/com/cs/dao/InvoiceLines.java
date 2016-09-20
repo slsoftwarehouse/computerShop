@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -32,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "InvoiceLines.findAll", query = "SELECT i FROM InvoiceLines i"),
     @NamedQuery(name = "InvoiceLines.findById", query = "SELECT i FROM InvoiceLines i WHERE i.id = :id"),
     @NamedQuery(name = "InvoiceLines.findByQty", query = "SELECT i FROM InvoiceLines i WHERE i.qty = :qty"),
-    @NamedQuery(name = "InvoiceLines.findByWarrantyEndDate", query = "SELECT i FROM InvoiceLines i WHERE i.warrantyEndDate = :warrantyEndDate"),
+    @NamedQuery(name = "InvoiceLines.findByWarrantyInDays", query = "SELECT i FROM InvoiceLines i WHERE i.warrantyInDays = :warrantyInDays"),
     @NamedQuery(name = "InvoiceLines.findByCostPrice", query = "SELECT i FROM InvoiceLines i WHERE i.costPrice = :costPrice"),
     @NamedQuery(name = "InvoiceLines.findByActualCostPrice", query = "SELECT i FROM InvoiceLines i WHERE i.actualCostPrice = :actualCostPrice"),
     @NamedQuery(name = "InvoiceLines.findByEndUserPrice", query = "SELECT i FROM InvoiceLines i WHERE i.endUserPrice = :endUserPrice"),
@@ -53,9 +52,8 @@ public class InvoiceLines implements Serializable {
     private String id;
     @Column(name = "qty")
     private Integer qty;
-    @Column(name = "warranty_end_date")
-    @Temporal(TemporalType.DATE)
-    private Date warrantyEndDate;
+    @Column(name = "warranty_in_days")
+    private Integer warrantyInDays;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "cost_price")
     private Double costPrice;
@@ -82,16 +80,16 @@ public class InvoiceLines implements Serializable {
     @Column(name = "prefix")
     private String prefix;
     @JoinColumn(name = "invoice", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Invoice invoice;
     @JoinColumn(name = "product", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Product product;
     @JoinColumn(name = "serial", referencedColumnName = "serial")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
 
     public InvoiceLines() {
@@ -117,12 +115,12 @@ public class InvoiceLines implements Serializable {
         this.qty = qty;
     }
 
-    public Date getWarrantyEndDate() {
-        return warrantyEndDate;
+    public Integer getWarrantyInDays() {
+        return warrantyInDays;
     }
 
-    public void setWarrantyEndDate(Date warrantyEndDate) {
-        this.warrantyEndDate = warrantyEndDate;
+    public void setWarrantyInDays(Integer warrantyInDays) {
+        this.warrantyInDays = warrantyInDays;
     }
 
     public Double getCostPrice() {

@@ -7,10 +7,16 @@ package com.cs.gui.Iframes;
 
 import com.cs.dao.Accounts;
 import com.cs.dao.ApplicationConstants;
+import com.cs.dao.Branch;
+import com.cs.dao.CashBook;
 import com.cs.dao.CreditNote;
 import com.cs.dao.Entity;
 import com.cs.dao.GrnLines;
+import com.cs.dao.Invoice;
+import com.cs.dao.InvoiceLines;
 import com.cs.dao.Product;
+import com.cs.dao.ProductBinCard;
+import com.cs.dao.Users;
 import com.cs.gui.frmMain;
 import com.cs.util.ButtonColumn;
 import com.cs.util.Utills;
@@ -27,10 +33,14 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JRootPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
@@ -45,6 +55,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
      * Creates new form frmInvoice
      */
     private final EntityManager em = frmMain.emf.createEntityManager();
+    Users user = new Users(1);
 
     static String CUSTOMER_QUERY = "SELECT e FROM Entity e WHERE e.entityType =0 and e.active=1";
     static String PRODUCT_QUERY = "SELECT p FROM Product p WHERE p.name like :name";
@@ -666,7 +677,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
             double endUserPrice = grnl.getPcode().getManagePriceGlobaly() == true ? grnl.getPcode().getGlobalEnduserPrice() : grnl.getEndUserPrice();
             double dealerPrice = grnl.getPcode().getManagePriceGlobaly() == true ? grnl.getPcode().getGlobalDealerPrice() : grnl.getDealerPrice();
 
-            Utills.addRowToTable(tblMain, new Object[]{grnl.getPcode().getId(), grnl.getSerial(), grnl.getPcode().getName(), 1, costPrice, endUserPrice, dealerPrice, grnl.getEndUserPrice(), grnl.getWarrantyInMonths(), endUserPrice, "-"});
+            Utills.addRowToTable(tblMain, new Object[]{grnl.getPcode().getId(), grnl.getSerial(), grnl.getPcode().getName(), 1, costPrice, endUserPrice, dealerPrice, grnl.getEndUserPrice(), grnl.getWarrantyInDays(), endUserPrice, "-", grnl});
         } else {
             JOptionPane.showMessageDialog(this, "Serial Not Found");
         }
@@ -683,7 +694,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
             try {
                 int qty = Integer.parseInt(JOptionPane.showInputDialog("Please provide the qty"));
                 double total = pr.getGlobalEnduserPrice() * qty;
-                Utills.addRowToTable(tblMain, new Object[]{pr.getId(), "", pr.getName(), qty, pr.getGlobslCostPrice(), pr.getGlobalEnduserPrice(), pr.getGlobalDealerPrice(), pr.getGlobalEnduserPrice(), 0, total, "-"});
+                Utills.addRowToTable(tblMain, new Object[]{pr.getId(), "", pr.getName(), qty, pr.getGlobslCostPrice(), pr.getGlobalEnduserPrice(), pr.getGlobalDealerPrice(), pr.getGlobalEnduserPrice(), 0, total, "-", pr});
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -714,7 +725,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                     double costPrice = pr.getManagePriceGlobaly() == true ? pr.getGlobslCostPrice() : grnl.getCostPrice();
                     double endUserPrice = pr.getManagePriceGlobaly() == true ? pr.getGlobalEnduserPrice() : grnl.getEndUserPrice();
                     double dealerPrice = pr.getManagePriceGlobaly() == true ? pr.getGlobalDealerPrice() : grnl.getDealerPrice();
-                    Utills.addRowToTable(tblSearchDetails, new Object[]{grnl.getPcode().getId(), grnl.getSerial(), pr.getName(), costPrice, endUserPrice, dealerPrice, endUserPrice, grnl.getWarrantyInMonths()});
+                    Utills.addRowToTable(tblSearchDetails, new Object[]{grnl.getPcode().getId(), grnl.getSerial(), pr.getName(), costPrice, endUserPrice, dealerPrice, endUserPrice, grnl.getWarrantyInDays()});
                 }
             }
 
@@ -743,19 +754,172 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
 
     private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
 
-        try {
-            em.getTransaction().begin();
-            Entity customer = selectedCustomer;
-            if (chkNewCustomer.isSelected()) {
-                 customer = new Entity();
-                 customer.setAddress(txtAddress.getText());
-                 customer.setCreditLimit(Double.parseDouble(txtCCreditLimit.getText()));
-            }
+        JComboBox usercbo = new JComboBox();
+        JTextField password = new JPasswordField();
+        JComboBox approved = new JComboBox();
+        JComboBox recomended = new JComboBox();
 
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            em.getTransaction().rollback();
+        Object[] message = {
+            "User Name :", usercbo,
+            "Password  :", password,
+            "Recomended By : ", recomended,
+            "Approved By : ", approved
+        };
+
+        int option = JOptionPane.showConfirmDialog(null, message, "Please confirm to create the invoice", JOptionPane.OK_CANCEL_OPTION);
+        if (option == JOptionPane.OK_OPTION) {
+            if (password.getText().equals("h")) {
+                try {
+                    em.getTransaction().begin();
+                    Entity customer = selectedCustomer;
+
+                    //adding the customer if new
+                    if (chkNewCustomer.isSelected()) {
+                        customer = new Entity();
+                        customer.setAddress(txtAddress.getText());
+                        customer.setCreditLimit(Double.parseDouble(txtCCreditLimit.getText()));
+                        customer.setEmail(txtCEmail.getText());
+                        customer.setEntityType(0);
+                        customer.setLandLine(txtCLandLine.getText());
+                        customer.setName(txtCName.getText());
+                        customer.setOrgBranch(frmMain.brn);
+                        customer.setPrefix(frmMain.prefix);
+                        customer.setTitile(cboCTitle.getSelectedItem().toString());
+                        customer.setUser(user);
+                        customer.setBrn(txtCNIC.getText());
+                        em.persist(customer);
+                    }
+
+                    //adding the invoice
+                    Invoice inv = new Invoice();
+
+                    inv.setShowinbill(chkShowOnBill.isSelected());
+                    inv.setAdminHide(false);
+                    inv.setCustomer(customer);
+                    inv.setOrgBranch(frmMain.brn);
+                    inv.setPrefix(frmMain.prefix);
+
+                    inv.setTotalBillable(Double.parseDouble(txtTotal.getText()));
+                    inv.setTotalDisscount(Double.parseDouble(txtDisscount.getText()));
+                    inv.setTotalWithoutDisscount(Double.parseDouble(txtSubTotal.getText()));
+                    inv.setPaymentMethod(((ApplicationConstants) cboPaymentMethod.getSelectedItem()));
+
+                    //TODO need to promt these details
+                    if (((ApplicationConstants) cboPaymentMethod.getSelectedItem()).getValue() != 0) {
+                        inv.setApprovedUser(user);
+                        inv.setRecomendedUser(user);
+                    }
+                    inv.setUser(user);
+                    em.persist(inv);
+
+                    if (((ApplicationConstants) cboPaymentMethod.getSelectedItem()).getValue() == 0) {
+                        CashBook cb = new CashBook();
+                        cb.setDebit(Double.parseDouble(txtTotal.getText()));
+                        cb.setDescription("Cash invoice " + inv.getId());
+                        cb.setOrgBranch(frmMain.brn);
+                        cb.setPrefix(frmMain.prefix);
+                        cb.setUser(user);
+                        em.persist(cb);
+
+                    } else {
+                        Accounts ac = new Accounts();
+                        ac.setCredit(Double.parseDouble(txtTotal.getText()));
+                        ac.setDescription(cboPaymentMethod.getSelectedItem().toString() + " " + inv.getId());
+                        ac.setEntity(customer);
+                        ac.setEntityType(0);
+                        ac.setOrgBranch(frmMain.brn);
+                        ac.setPrefix(frmMain.prefix);
+                        ac.setUser(user);
+                        em.persist(ac);
+
+                    }
+
+                    if (cboCNote.getSelectedIndex() > -1) {
+                        CreditNote cn = (CreditNote) cboCNote.getSelectedItem();
+                        cn.setCreditNoteStatus(new ApplicationConstants(13));
+                    }
+
+                    DefaultTableModel dTableModel = (DefaultTableModel) tblMain.getModel();
+                    for (int i = 0; i < tblMain.getRowCount(); i++) {
+                        //add to invoice lines
+                        String serial = dTableModel.getValueAt(i, 1).toString();
+                        int qty = Integer.parseInt(dTableModel.getValueAt(i, 3).toString());
+                        int warranty = Integer.parseInt(dTableModel.getValueAt(i, 8).toString());
+                        double sellingPrice = Double.parseDouble(dTableModel.getValueAt(i, 7).toString());
+                        Product prdToUpdate = null;
+                        GrnLines grln = null;
+                        double costPrice = 0;
+                        double endUserPrice = 0;
+                        double dealerPrice = 0;
+                        double aCostPrice = 0;
+
+                        if (serial.length() < 2) {
+                            grln = (GrnLines) dTableModel.getValueAt(i, 11);
+
+                            prdToUpdate = grln.getPcode();
+
+                            costPrice = grln.getPcode().getManagePriceGlobaly() == true ? prdToUpdate.getGlobslCostPrice() : grln.getCostPrice();
+                            endUserPrice = grln.getPcode().getManagePriceGlobaly() == true ? prdToUpdate.getGlobalEnduserPrice() : grln.getEndUserPrice();
+                            dealerPrice = grln.getPcode().getManagePriceGlobaly() == true ? prdToUpdate.getGlobalDealerPrice() : grln.getDealerPrice();
+                            aCostPrice = grln.getPcode().getManagePriceGlobaly() == true ? prdToUpdate.getGlobalActualCostPrice() : grln.getActualCostPrice();
+
+                            grln.setUserSales(user);
+                            em.persist(grln);
+                        } else {
+                            prdToUpdate = (Product) dTableModel.getValueAt(i, 11);
+                            costPrice = prdToUpdate.getGlobslCostPrice();
+                            endUserPrice = prdToUpdate.getGlobalEnduserPrice();
+                            dealerPrice = prdToUpdate.getGlobalDealerPrice();
+                            aCostPrice = prdToUpdate.getGlobalActualCostPrice();
+
+                            //insert to invoice lines
+                        }
+                        InvoiceLines invl = new InvoiceLines();
+                        invl.setActualCostPrice(aCostPrice);
+                        invl.setCostPrice(costPrice);
+                        invl.setDealerPrice(dealerPrice);
+                        invl.setEndUserPrice(endUserPrice);
+                        invl.setInvoice(inv);
+                        invl.setPrefix(frmMain.prefix);
+                        invl.setProduct(prdToUpdate);
+                        invl.setQty(qty);
+                        invl.setSellingPrice(sellingPrice);
+                        invl.setSerial(grln);
+                        invl.setTotal(Double.parseDouble(txtTotal.getText()));
+                        invl.setUser(user);
+                        invl.setWarrantyInDays(warranty);
+
+                        em.persist(invl);
+
+                        //update product table qih. it shold be hancle in db side so just use a query to update
+                        Query createQuery = em.createQuery("UPDATE Product p SET p.qih = p.qih - :sold");
+                        createQuery.setParameter("sold", qty);
+                        createQuery.executeUpdate();
+
+                        //add to product bin card
+                        ProductBinCard bin = new ProductBinCard();
+                        bin.setDescription("sold to " + inv.getId());
+                        bin.setOrgBranch(frmMain.brn);
+                        bin.setOut(qty);
+                        bin.setPrefix(frmMain.prefix);
+                        bin.setProduct(prdToUpdate);
+                        bin.setSerial(grln);
+                        bin.setUser(user);
+                        em.persist(bin);
+
+                    }
+
+                    em.getTransaction().commit();
+
+                    // call from print from here
+                } catch (Exception e) {
+                    em.getTransaction().rollback();
+                }
+            } 
+        } else {
+            System.out.println("Login canceled");
         }
+
 
     }//GEN-LAST:event_btnCreateInvoiceActionPerformed
 
