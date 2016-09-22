@@ -7,26 +7,22 @@ package com.cs.dao;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
- * @author home
+ * @author hasangi
  */
 @Entity
 @Table(name = "grn_lines")
@@ -40,7 +36,7 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "GrnLines.findByActualCostPrice", query = "SELECT g FROM GrnLines g WHERE g.actualCostPrice = :actualCostPrice"),
     @NamedQuery(name = "GrnLines.findByEndUserPrice", query = "SELECT g FROM GrnLines g WHERE g.endUserPrice = :endUserPrice"),
     @NamedQuery(name = "GrnLines.findByDealerPrice", query = "SELECT g FROM GrnLines g WHERE g.dealerPrice = :dealerPrice"),
-    @NamedQuery(name = "GrnLines.findByWarrantyInMonths", query = "SELECT g FROM GrnLines g WHERE g.warrantyInMonths = :warrantyInMonths"),
+    @NamedQuery(name = "GrnLines.findByWarrantyInDays", query = "SELECT g FROM GrnLines g WHERE g.warrantyInDays = :warrantyInDays"),
     @NamedQuery(name = "GrnLines.findByWarrantyenddate", query = "SELECT g FROM GrnLines g WHERE g.warrantyenddate = :warrantyenddate"),
     @NamedQuery(name = "GrnLines.findByIsDamage", query = "SELECT g FROM GrnLines g WHERE g.isDamage = :isDamage"),
     @NamedQuery(name = "GrnLines.findByDamageUpdatedUser", query = "SELECT g FROM GrnLines g WHERE g.damageUpdatedUser = :damageUpdatedUser"),
@@ -66,8 +62,8 @@ public class GrnLines implements Serializable {
     private Double endUserPrice;
     @Column(name = "dealer_price")
     private Double dealerPrice;
-    @Column(name = "warranty_in_months")
-    private Integer warrantyInMonths;
+    @Column(name = "warranty_in_days")
+    private Integer warrantyInDays;
     @Column(name = "Warranty_end_date")
     @Temporal(TemporalType.DATE)
     private Date warrantyenddate;
@@ -80,37 +76,21 @@ public class GrnLines implements Serializable {
     private Date datetime;
     @Column(name = "prefix")
     private String prefix;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
-    private List<SampleLines> sampleLinesList;
     @JoinColumn(name = "pcode", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Product pcode;
     @JoinColumn(name = "branch", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Branch branch;
     @JoinColumn(name = "grn", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Grn grn;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users user;
     @JoinColumn(name = "user_sales", referencedColumnName = "id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Users userSales;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
-    private List<BranchTransferLines> branchTransferLinesList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
-    private List<JobsLines> jobsLinesList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
-    private List<GrnReturnLines> grnReturnLinesList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
-    private List<ProductBinCard> productBinCardList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
-    private List<InvoiceLines> invoiceLinesList;
-    @OneToMany(mappedBy = "backupSerial", fetch = FetchType.LAZY)
-    private List<Warrranty> warrrantyList;
-    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
-    private List<Warrranty> warrrantyList1;
 
     public GrnLines() {
     }
@@ -175,12 +155,12 @@ public class GrnLines implements Serializable {
         this.dealerPrice = dealerPrice;
     }
 
-    public Integer getWarrantyInMonths() {
-        return warrantyInMonths;
+    public Integer getWarrantyInDays() {
+        return warrantyInDays;
     }
 
-    public void setWarrantyInMonths(Integer warrantyInMonths) {
-        this.warrantyInMonths = warrantyInMonths;
+    public void setWarrantyInDays(Integer warrantyInDays) {
+        this.warrantyInDays = warrantyInDays;
     }
 
     public Date getWarrantyenddate() {
@@ -223,15 +203,6 @@ public class GrnLines implements Serializable {
         this.prefix = prefix;
     }
 
-    @XmlTransient
-    public List<SampleLines> getSampleLinesList() {
-        return sampleLinesList;
-    }
-
-    public void setSampleLinesList(List<SampleLines> sampleLinesList) {
-        this.sampleLinesList = sampleLinesList;
-    }
-
     public Product getPcode() {
         return pcode;
     }
@@ -270,69 +241,6 @@ public class GrnLines implements Serializable {
 
     public void setUserSales(Users userSales) {
         this.userSales = userSales;
-    }
-
-    @XmlTransient
-    public List<BranchTransferLines> getBranchTransferLinesList() {
-        return branchTransferLinesList;
-    }
-
-    public void setBranchTransferLinesList(List<BranchTransferLines> branchTransferLinesList) {
-        this.branchTransferLinesList = branchTransferLinesList;
-    }
-
-    @XmlTransient
-    public List<JobsLines> getJobsLinesList() {
-        return jobsLinesList;
-    }
-
-    public void setJobsLinesList(List<JobsLines> jobsLinesList) {
-        this.jobsLinesList = jobsLinesList;
-    }
-
-    @XmlTransient
-    public List<GrnReturnLines> getGrnReturnLinesList() {
-        return grnReturnLinesList;
-    }
-
-    public void setGrnReturnLinesList(List<GrnReturnLines> grnReturnLinesList) {
-        this.grnReturnLinesList = grnReturnLinesList;
-    }
-
-    @XmlTransient
-    public List<ProductBinCard> getProductBinCardList() {
-        return productBinCardList;
-    }
-
-    public void setProductBinCardList(List<ProductBinCard> productBinCardList) {
-        this.productBinCardList = productBinCardList;
-    }
-
-    @XmlTransient
-    public List<InvoiceLines> getInvoiceLinesList() {
-        return invoiceLinesList;
-    }
-
-    public void setInvoiceLinesList(List<InvoiceLines> invoiceLinesList) {
-        this.invoiceLinesList = invoiceLinesList;
-    }
-
-    @XmlTransient
-    public List<Warrranty> getWarrrantyList() {
-        return warrrantyList;
-    }
-
-    public void setWarrrantyList(List<Warrranty> warrrantyList) {
-        this.warrrantyList = warrrantyList;
-    }
-
-    @XmlTransient
-    public List<Warrranty> getWarrrantyList1() {
-        return warrrantyList1;
-    }
-
-    public void setWarrrantyList1(List<Warrranty> warrrantyList1) {
-        this.warrrantyList1 = warrrantyList1;
     }
 
     @Override

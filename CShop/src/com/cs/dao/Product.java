@@ -313,7 +313,8 @@ public class Product implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Product[ id=" + id + " ]";
+//        return "com.cs.dao.Product[ id=" + id + " ]";
+    return id;
     }
     
 }

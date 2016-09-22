@@ -6,6 +6,7 @@
 package com.cs.dao;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -35,6 +36,9 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "ApplicationConstants.findByValue", query = "SELECT a FROM ApplicationConstants a WHERE a.value = :value"),
     @NamedQuery(name = "ApplicationConstants.findByText", query = "SELECT a FROM ApplicationConstants a WHERE a.text = :text")})
 public class ApplicationConstants implements Serializable {
+
+    @OneToMany(mappedBy = "paymentMethod")
+    private Collection<Grn> grnCollection;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -188,6 +192,15 @@ public class ApplicationConstants implements Serializable {
     @Override
     public String toString() {
         return "com.cs.dao.ApplicationConstants[ id=" + id + " ]";
+    }
+
+    @XmlTransient
+    public Collection<Grn> getGrnCollection() {
+        return grnCollection;
+    }
+
+    public void setGrnCollection(Collection<Grn> grnCollection) {
+        this.grnCollection = grnCollection;
     }
     
 }

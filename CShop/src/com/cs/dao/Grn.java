@@ -40,6 +40,10 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Grn.findByPrefix", query = "SELECT g FROM Grn g WHERE g.prefix = :prefix")})
 public class Grn implements Serializable {
 
+    @JoinColumn(name = "payment_method", referencedColumnName = "id")
+    @ManyToOne
+    private ApplicationConstants paymentMethod;
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -181,6 +185,14 @@ public class Grn implements Serializable {
     @Override
     public String toString() {
         return "com.cs.dao.Grn[ id=" + id + " ]";
+    }
+
+    public ApplicationConstants getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(ApplicationConstants paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
     
 }

@@ -7,6 +7,7 @@ package com.cs.gui;
 
 
 import com.cs.gui.Iframes.frmICustomer;
+import com.cs.gui.Iframes.frmIGRN;
 import com.cs.gui.Iframes.frmIInvoice;
 import com.cs.gui.Iframes.frmIProduct;
 import com.cs.gui.Iframes.frmIProductCatagory;
@@ -57,6 +58,7 @@ public class frmMain extends javax.swing.JFrame {
         mnuIProductCategory = new javax.swing.JMenuItem();
         mnuiInvoice = new javax.swing.JMenuItem();
         mnuISuppluer = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Print Shop");
@@ -133,6 +135,14 @@ public class frmMain extends javax.swing.JFrame {
         });
         mnuFile.add(mnuISuppluer);
 
+        jMenuItem1.setText("GRN");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        mnuFile.add(jMenuItem1);
+
         mnuBar.add(mnuFile);
 
         setJMenuBar(mnuBar);
@@ -180,6 +190,10 @@ public class frmMain extends javax.swing.JFrame {
     private void mnuISuppluerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mnuISuppluerActionPerformed
         showIFrame(new frmICustomer(false));
     }//GEN-LAST:event_mnuISuppluerActionPerformed
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        showIFrame(new frmIGRN());
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -260,6 +274,7 @@ public class frmMain extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem jMenuItem1;
     public static javax.swing.JDesktopPane mainDesktopPane;
     private javax.swing.JMenuBar mnuBar;
     private javax.swing.JMenu mnuFile;
