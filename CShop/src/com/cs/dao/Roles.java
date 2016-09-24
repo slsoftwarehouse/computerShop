@@ -113,7 +113,7 @@ public class Roles implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Roles[ id=" + id + " ]";
+        return name;
     }
     
 }

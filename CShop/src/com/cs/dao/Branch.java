@@ -314,7 +314,7 @@ public class Branch implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Branch[ id=" + id + " ]";
+        return name;
     }
     
 }

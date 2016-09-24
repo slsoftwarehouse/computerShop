@@ -446,7 +446,7 @@ public class Users implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cs.dao.Users[ id=" + id + " ]";
+        return name;
     }
     
 }
