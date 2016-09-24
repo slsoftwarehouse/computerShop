@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -37,15 +40,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Warrranty.findBySentToSupplierDate", query = "SELECT w FROM Warrranty w WHERE w.sentToSupplierDate = :sentToSupplierDate"),
     @NamedQuery(name = "Warrranty.findByReceivedFromSupplierDate", query = "SELECT w FROM Warrranty w WHERE w.receivedFromSupplierDate = :receivedFromSupplierDate"),
     @NamedQuery(name = "Warrranty.findBySentToCustomerDate", query = "SELECT w FROM Warrranty w WHERE w.sentToCustomerDate = :sentToCustomerDate"),
-    @NamedQuery(name = "Warrranty.findByDatetime", query = "SELECT w FROM Warrranty w WHERE w.datetime = :datetime"),
-    @NamedQuery(name = "Warrranty.findByPrefix", query = "SELECT w FROM Warrranty w WHERE w.prefix = :prefix")})
+    @NamedQuery(name = "Warrranty.findByDatetime", query = "SELECT w FROM Warrranty w WHERE w.datetime = :datetime")})
 public class Warrranty implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "backup_status")
     private Integer backupStatus;
     @Column(name = "received_date")
@@ -68,36 +71,34 @@ public class Warrranty implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @JoinColumn(name = "backup_serial", referencedColumnName = "serial")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnLines backupSerial;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "product", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
     @JoinColumn(name = "serial", referencedColumnName = "serial")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Warrranty() {
     }
 
-    public Warrranty(String id) {
+    public Warrranty(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -163,14 +164,6 @@ public class Warrranty implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public GrnLines getBackupSerial() {

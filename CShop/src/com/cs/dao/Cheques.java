@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -40,15 +43,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Cheques.findByReturnDate", query = "SELECT c FROM Cheques c WHERE c.returnDate = :returnDate"),
     @NamedQuery(name = "Cheques.findByEntityType", query = "SELECT c FROM Cheques c WHERE c.entityType = :entityType"),
     @NamedQuery(name = "Cheques.findByDescription", query = "SELECT c FROM Cheques c WHERE c.description = :description"),
-    @NamedQuery(name = "Cheques.findByDatetime", query = "SELECT c FROM Cheques c WHERE c.datetime = :datetime"),
-    @NamedQuery(name = "Cheques.findByPrefix", query = "SELECT c FROM Cheques c WHERE c.prefix = :prefix")})
+    @NamedQuery(name = "Cheques.findByDatetime", query = "SELECT c FROM Cheques c WHERE c.datetime = :datetime")})
 public class Cheques implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "number")
     private String number;
     @Column(name = "bank_code")
@@ -76,33 +79,31 @@ public class Cheques implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @JoinColumn(name = "entity", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private com.cs.dao.Entity entity;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "status_code", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants statusCode;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Cheques() {
     }
 
-    public Cheques(String id) {
+    public Cheques(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -192,14 +193,6 @@ public class Cheques implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public com.cs.dao.Entity getEntity() {

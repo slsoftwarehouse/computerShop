@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -30,7 +33,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
     @NamedQuery(name = "SupplierProduct.findAll", query = "SELECT s FROM SupplierProduct s"),
     @NamedQuery(name = "SupplierProduct.findByDatetime", query = "SELECT s FROM SupplierProduct s WHERE s.datetime = :datetime"),
-    @NamedQuery(name = "SupplierProduct.findByPrefix", query = "SELECT s FROM SupplierProduct s WHERE s.prefix = :prefix"),
     @NamedQuery(name = "SupplierProduct.findById", query = "SELECT s FROM SupplierProduct s WHERE s.id = :id")})
 public class SupplierProduct implements Serializable {
 
@@ -38,29 +40,28 @@ public class SupplierProduct implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @JoinColumn(name = "product", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private Product product;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "supplier", referencedColumnName = "id")
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
     private com.cs.dao.Entity supplier;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public SupplierProduct() {
     }
 
-    public SupplierProduct(String id) {
+    public SupplierProduct(Integer id) {
         this.id = id;
     }
 
@@ -72,19 +73,11 @@ public class SupplierProduct implements Serializable {
         this.datetime = datetime;
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

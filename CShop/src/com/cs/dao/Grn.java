@@ -11,6 +11,9 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -35,15 +38,15 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Grn.findById", query = "SELECT g FROM Grn g WHERE g.id = :id"),
     @NamedQuery(name = "Grn.findByTotal", query = "SELECT g FROM Grn g WHERE g.total = :total"),
     @NamedQuery(name = "Grn.findByDisscountTotal", query = "SELECT g FROM Grn g WHERE g.disscountTotal = :disscountTotal"),
-    @NamedQuery(name = "Grn.findByDatetime", query = "SELECT g FROM Grn g WHERE g.datetime = :datetime"),
-    @NamedQuery(name = "Grn.findByPrefix", query = "SELECT g FROM Grn g WHERE g.prefix = :prefix")})
+    @NamedQuery(name = "Grn.findByDatetime", query = "SELECT g FROM Grn g WHERE g.datetime = :datetime")})
 public class Grn implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "total")
     private Double total;
@@ -52,38 +55,36 @@ public class Grn implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
-    @OneToMany(mappedBy = "grn")
+    @OneToMany(mappedBy = "grn", fetch = FetchType.LAZY)
     private List<GrnLines> grnLinesList;
     @JoinColumn(name = "payment_method", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants paymentMethod;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "credit_note", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private CreditNote creditNote;
     @JoinColumn(name = "supplier", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private com.cs.dao.Entity supplier;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Grn() {
     }
 
-    public Grn(String id) {
+    public Grn(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -109,14 +110,6 @@ public class Grn implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     @XmlTransient

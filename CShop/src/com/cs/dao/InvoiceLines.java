@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -41,15 +44,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "InvoiceLines.findByTotal", query = "SELECT i FROM InvoiceLines i WHERE i.total = :total"),
     @NamedQuery(name = "InvoiceLines.findByIsreturn", query = "SELECT i FROM InvoiceLines i WHERE i.isreturn = :isreturn"),
     @NamedQuery(name = "InvoiceLines.findByReturnDate", query = "SELECT i FROM InvoiceLines i WHERE i.returnDate = :returnDate"),
-    @NamedQuery(name = "InvoiceLines.findByDatetime", query = "SELECT i FROM InvoiceLines i WHERE i.datetime = :datetime"),
-    @NamedQuery(name = "InvoiceLines.findByPrefix", query = "SELECT i FROM InvoiceLines i WHERE i.prefix = :prefix")})
+    @NamedQuery(name = "InvoiceLines.findByDatetime", query = "SELECT i FROM InvoiceLines i WHERE i.datetime = :datetime")})
 public class InvoiceLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "qty")
     private Integer qty;
     @Column(name = "warranty_in_days")
@@ -77,33 +80,31 @@ public class InvoiceLines implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @JoinColumn(name = "invoice", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Invoice invoice;
     @JoinColumn(name = "product", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
     @JoinColumn(name = "serial", referencedColumnName = "serial")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public InvoiceLines() {
     }
 
-    public InvoiceLines(String id) {
+    public InvoiceLines(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -201,14 +202,6 @@ public class InvoiceLines implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public Invoice getInvoice() {

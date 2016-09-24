@@ -12,6 +12,9 @@ import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -42,15 +45,15 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Product.findByGlobalActualCostPrice", query = "SELECT p FROM Product p WHERE p.globalActualCostPrice = :globalActualCostPrice"),
     @NamedQuery(name = "Product.findByQih", query = "SELECT p FROM Product p WHERE p.qih = :qih"),
     @NamedQuery(name = "Product.findByDqih", query = "SELECT p FROM Product p WHERE p.dqih = :dqih"),
-    @NamedQuery(name = "Product.findByDatetime", query = "SELECT p FROM Product p WHERE p.datetime = :datetime"),
-    @NamedQuery(name = "Product.findByPrefix", query = "SELECT p FROM Product p WHERE p.prefix = :prefix")})
+    @NamedQuery(name = "Product.findByDatetime", query = "SELECT p FROM Product p WHERE p.datetime = :datetime")})
 public class Product implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "name")
     private String name;
     @Column(name = "manage_price_globaly")
@@ -71,45 +74,43 @@ public class Product implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product", fetch = FetchType.LAZY)
     private List<SupplierProduct> supplierProductList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<SampleLines> sampleLinesList;
-    @OneToMany(mappedBy = "pcode")
+    @OneToMany(mappedBy = "pcode", fetch = FetchType.LAZY)
     private List<GrnLines> grnLinesList;
-    @OneToMany(mappedBy = "pcode")
+    @OneToMany(mappedBy = "pcode", fetch = FetchType.LAZY)
     private List<BranchTransferLines> branchTransferLinesList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<JobsLines> jobsLinesList;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<GrnReturnLines> grnReturnLinesList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<ProductBinCard> productBinCardList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<InvoiceLines> invoiceLinesList;
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY)
     private List<Warrranty> warrrantyList;
 
     public Product() {
     }
 
-    public Product(String id) {
+    public Product(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -183,14 +184,6 @@ public class Product implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     @XmlTransient

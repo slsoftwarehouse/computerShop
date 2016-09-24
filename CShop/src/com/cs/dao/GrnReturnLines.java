@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -32,15 +35,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "GrnReturnLines.findById", query = "SELECT g FROM GrnReturnLines g WHERE g.id = :id"),
     @NamedQuery(name = "GrnReturnLines.findByQty", query = "SELECT g FROM GrnReturnLines g WHERE g.qty = :qty"),
     @NamedQuery(name = "GrnReturnLines.findByCostPrice", query = "SELECT g FROM GrnReturnLines g WHERE g.costPrice = :costPrice"),
-    @NamedQuery(name = "GrnReturnLines.findByDatetime", query = "SELECT g FROM GrnReturnLines g WHERE g.datetime = :datetime"),
-    @NamedQuery(name = "GrnReturnLines.findByPrefix", query = "SELECT g FROM GrnReturnLines g WHERE g.prefix = :prefix")})
+    @NamedQuery(name = "GrnReturnLines.findByDatetime", query = "SELECT g FROM GrnReturnLines g WHERE g.datetime = :datetime")})
 public class GrnReturnLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "qty")
     private Integer qty;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -49,33 +52,31 @@ public class GrnReturnLines implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @JoinColumn(name = "product", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
     @JoinColumn(name = "return", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnReturn return1;
     @JoinColumn(name = "serial", referencedColumnName = "serial")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public GrnReturnLines() {
     }
 
-    public GrnReturnLines(String id) {
+    public GrnReturnLines(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -101,14 +102,6 @@ public class GrnReturnLines implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public Product getProduct() {

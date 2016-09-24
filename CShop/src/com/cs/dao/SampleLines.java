@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,50 +34,48 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "SampleLines.findAll", query = "SELECT s FROM SampleLines s"),
     @NamedQuery(name = "SampleLines.findById", query = "SELECT s FROM SampleLines s WHERE s.id = :id"),
     @NamedQuery(name = "SampleLines.findByQty", query = "SELECT s FROM SampleLines s WHERE s.qty = :qty"),
-    @NamedQuery(name = "SampleLines.findByDatetime", query = "SELECT s FROM SampleLines s WHERE s.datetime = :datetime"),
-    @NamedQuery(name = "SampleLines.findByPrefix", query = "SELECT s FROM SampleLines s WHERE s.prefix = :prefix")})
+    @NamedQuery(name = "SampleLines.findByDatetime", query = "SELECT s FROM SampleLines s WHERE s.datetime = :datetime")})
 public class SampleLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "qty")
     private Integer qty;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @JoinColumn(name = "status", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants status;
-    @JoinColumn(name = "serial", referencedColumnName = "id")
-    @ManyToOne
+    @JoinColumn(name = "serial", referencedColumnName = "serial")
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnLines serial;
     @JoinColumn(name = "product", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
     @JoinColumn(name = "sample", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Sample sample;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public SampleLines() {
     }
 
-    public SampleLines(String id) {
+    public SampleLines(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -92,14 +93,6 @@ public class SampleLines implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public ApplicationConstants getStatus() {

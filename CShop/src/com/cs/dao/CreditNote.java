@@ -11,6 +11,9 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -36,56 +39,54 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "CreditNote.findByEntityType", query = "SELECT c FROM CreditNote c WHERE c.entityType = :entityType"),
     @NamedQuery(name = "CreditNote.findByEntityReferance", query = "SELECT c FROM CreditNote c WHERE c.entityReferance = :entityReferance"),
     @NamedQuery(name = "CreditNote.findByTotal", query = "SELECT c FROM CreditNote c WHERE c.total = :total"),
-    @NamedQuery(name = "CreditNote.findByDatetime", query = "SELECT c FROM CreditNote c WHERE c.datetime = :datetime"),
-    @NamedQuery(name = "CreditNote.findByPrefix", query = "SELECT c FROM CreditNote c WHERE c.prefix = :prefix")})
+    @NamedQuery(name = "CreditNote.findByDatetime", query = "SELECT c FROM CreditNote c WHERE c.datetime = :datetime")})
 public class CreditNote implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "entity_type")
     private Integer entityType;
     @Column(name = "entity_referance")
-    private String entityReferance;
+    private Integer entityReferance;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Column(name = "total")
     private Double total;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
-    @OneToMany(mappedBy = "creditNote")
+    @OneToMany(mappedBy = "creditNote", fetch = FetchType.LAZY)
     private List<GrnReturn> grnReturnList;
     @JoinColumn(name = "entity", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private com.cs.dao.Entity entity;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "credit_note_status", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants creditNoteStatus;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
-    @OneToMany(mappedBy = "creditNote")
+    @OneToMany(mappedBy = "creditNote", fetch = FetchType.LAZY)
     private List<Grn> grnList;
 
     public CreditNote() {
     }
 
-    public CreditNote(String id) {
+    public CreditNote(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -97,11 +98,11 @@ public class CreditNote implements Serializable {
         this.entityType = entityType;
     }
 
-    public String getEntityReferance() {
+    public Integer getEntityReferance() {
         return entityReferance;
     }
 
-    public void setEntityReferance(String entityReferance) {
+    public void setEntityReferance(Integer entityReferance) {
         this.entityReferance = entityReferance;
     }
 
@@ -119,14 +120,6 @@ public class CreditNote implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     @XmlTransient
@@ -201,7 +194,7 @@ public class CreditNote implements Serializable {
 
     @Override
     public String toString() {
-        return id + "--" + total;
+        return "com.cs.dao.CreditNote[ id=" + id + " ]";
     }
     
 }

@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -34,15 +37,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Accounts.findByCredit", query = "SELECT a FROM Accounts a WHERE a.credit = :credit"),
     @NamedQuery(name = "Accounts.findByDebit", query = "SELECT a FROM Accounts a WHERE a.debit = :debit"),
     @NamedQuery(name = "Accounts.findByDescription", query = "SELECT a FROM Accounts a WHERE a.description = :description"),
-    @NamedQuery(name = "Accounts.findByDatetime", query = "SELECT a FROM Accounts a WHERE a.datetime = :datetime"),
-    @NamedQuery(name = "Accounts.findByPrefix", query = "SELECT a FROM Accounts a WHERE a.prefix = :prefix")})
+    @NamedQuery(name = "Accounts.findByDatetime", query = "SELECT a FROM Accounts a WHERE a.datetime = :datetime")})
 public class Accounts implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "entity_type")
     private Integer entityType;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
@@ -55,30 +58,28 @@ public class Accounts implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
-    @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
-    private Branch orgBranch;
     @JoinColumn(name = "entity", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private com.cs.dao.Entity entity;
+    @JoinColumn(name = "org_branch", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Branch orgBranch;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Accounts() {
     }
 
-    public Accounts(String id) {
+    public Accounts(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -122,12 +123,12 @@ public class Accounts implements Serializable {
         this.datetime = datetime;
     }
 
-    public String getPrefix() {
-        return prefix;
+    public com.cs.dao.Entity getEntity() {
+        return entity;
     }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+    public void setEntity(com.cs.dao.Entity entity) {
+        this.entity = entity;
     }
 
     public Branch getOrgBranch() {
@@ -136,14 +137,6 @@ public class Accounts implements Serializable {
 
     public void setOrgBranch(Branch orgBranch) {
         this.orgBranch = orgBranch;
-    }
-
-    public com.cs.dao.Entity getEntity() {
-        return entity;
-    }
-
-    public void setEntity(com.cs.dao.Entity entity) {
-        this.entity = entity;
     }
 
     public Users getUser() {

@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,47 +34,45 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "BranchTransferLines.findAll", query = "SELECT b FROM BranchTransferLines b"),
     @NamedQuery(name = "BranchTransferLines.findById", query = "SELECT b FROM BranchTransferLines b WHERE b.id = :id"),
     @NamedQuery(name = "BranchTransferLines.findByQty", query = "SELECT b FROM BranchTransferLines b WHERE b.qty = :qty"),
-    @NamedQuery(name = "BranchTransferLines.findByDatetime", query = "SELECT b FROM BranchTransferLines b WHERE b.datetime = :datetime"),
-    @NamedQuery(name = "BranchTransferLines.findByPrefix", query = "SELECT b FROM BranchTransferLines b WHERE b.prefix = :prefix")})
+    @NamedQuery(name = "BranchTransferLines.findByDatetime", query = "SELECT b FROM BranchTransferLines b WHERE b.datetime = :datetime")})
 public class BranchTransferLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "qty")
     private Integer qty;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @JoinColumn(name = "pcode", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product pcode;
     @JoinColumn(name = "serial", referencedColumnName = "serial")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnLines serial;
     @JoinColumn(name = "transfered_user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users transferedUser;
     @JoinColumn(name = "accepted_user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users acceptedUser;
 
     public BranchTransferLines() {
     }
 
-    public BranchTransferLines(String id) {
+    public BranchTransferLines(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -89,14 +90,6 @@ public class BranchTransferLines implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public Product getPcode() {

@@ -16,6 +16,7 @@ import com.cs.dao.Invoice;
 import com.cs.dao.InvoiceLines;
 import com.cs.dao.Product;
 import com.cs.dao.ProductBinCard;
+import com.cs.dao.Roles;
 import com.cs.dao.Users;
 import com.cs.gui.frmMain;
 import com.cs.util.ButtonColumn;
@@ -26,6 +27,7 @@ import java.awt.event.KeyEvent;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -44,6 +46,7 @@ import javax.swing.JTextField;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 
 /**
  *
@@ -89,6 +92,11 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
             ((DefaultComboBoxModel) cboPaymentMethod.getModel()).addElement(pm);
         }
 
+        tblMain.getModel().addTableModelListener(this);
+        TableColumn tcol = tblMain.getColumnModel().getColumn(11);
+        tblMain.getColumnModel().removeColumn(tcol);
+        tblMain.setAutoCreateColumnsFromModel(false);
+
     }
 
     void setCustomerFileds(Entity e) {
@@ -117,10 +125,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
         for (Entity e : entity) {
             selectedCustomer = e;
             setCustomerFileds(e);
-            Query createQueryC = em.createNamedQuery("CreditNote.findByEntityReferance");
-            createQueryC.setParameter("entityReferance", selectedCustomer.getId());
-            createQueryC.setMaxResults(5);
-            List<CreditNote> creditNotes = (List<CreditNote>) createQueryC.getResultList();
+            List<CreditNote> creditNotes = e.getCreditNoteList();
             for (CreditNote crn : creditNotes) {
                 if (crn.getCreditNoteStatus().getValue() == 0) {
                     ((DefaultComboBoxModel) cboCNote.getModel()).addElement(crn);
@@ -223,14 +228,14 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
 
             },
             new String [] {
-                "Code", "Serial", "Name", "QTY", "Cost", "End User", "Dealer", "Selling", "Warranty", "Total", ""
+                "Code", "Serial", "Name", "QTY", "Cost", "End User", "Dealer", "Selling", "Warranty", "Total", "", ""
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Double.class, java.lang.Integer.class, java.lang.Double.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, true, false, false, false, true, true, false, false
+                false, false, false, true, false, false, false, true, true, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -256,6 +261,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
             tblMain.getColumnModel().getColumn(8).setResizable(false);
             tblMain.getColumnModel().getColumn(9).setResizable(false);
             tblMain.getColumnModel().getColumn(10).setResizable(false);
+            tblMain.getColumnModel().getColumn(11).setResizable(false);
         }
 
         jLabel5.setText("Disscount");
@@ -735,7 +741,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
     private void tblSearchDetailsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblSearchDetailsMouseClicked
         if (evt.getClickCount() == 2 && tblSearchDetails.getSelectedRow() > -1) {
             String code = tblSearchDetails.getModel().getValueAt(tblSearchDetails.getSelectedRow(), 0).toString();
-            String serial = tblSearchDetails.getModel().getValueAt(tblSearchDetails.getSelectedRow(), 0).toString();
+            String serial = tblSearchDetails.getModel().getValueAt(tblSearchDetails.getSelectedRow(), 1).toString();
             if (serial.length() > 1) {
                 addBySerial(serial);
             } else {
@@ -754,19 +760,32 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
 
     private void btnCreateInvoiceActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateInvoiceActionPerformed
 
-        JComboBox usercbo = new JComboBox();
+        JComboBox<Users> usercbo = new JComboBox<Users>();
         JTextField password = new JPasswordField();
         Users appUser = user;
-        Users recuser=user;
+        Users recuser = user;
         Object[] message = null;
+        Query createQuery = em.createNamedQuery("Users.findByRole");
+        createQuery.setParameter("role", "1");
+        List<Users> uls = createQuery.getResultList();
         if (((ApplicationConstants) cboPaymentMethod.getSelectedItem()).getValue() == 0) {
+            for (Users u : uls) {
+
+                usercbo.addItem(u);
+            }
             message = new Object[]{
                 "User Name :", usercbo,
                 "Password  :", password
             };
         } else {
-            JComboBox approved = new JComboBox();
-            JComboBox recomended = new JComboBox();
+            JComboBox<Users> approved = new JComboBox<Users>();
+            JComboBox<Users> recomended = new JComboBox<Users>();
+
+            for (Users u : uls) {
+                approved.addItem(u);
+                recomended.addItem(u);
+                usercbo.addItem(u);
+            }
             message = new Object[]{
                 "User Name :", usercbo,
                 "Password  :", password,
@@ -777,7 +796,13 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
 
         int option = JOptionPane.showConfirmDialog(null, message, "Please confirm to create the invoice", JOptionPane.OK_CANCEL_OPTION);
         if (option == JOptionPane.OK_OPTION) {
-            if (password.getText().equals("h")) {
+            boolean isAuth = false;
+            for (Users u : uls) {
+                if (u.equals(usercbo.getSelectedItem()) && u.getPassword().equalsIgnoreCase(password.getText())) {
+                    isAuth = true;
+                }
+            }
+            if (isAuth) {
                 try {
                     em.getTransaction().begin();
                     Entity customer = selectedCustomer;
@@ -792,11 +817,12 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                         customer.setLandLine(txtCLandLine.getText());
                         customer.setName(txtCName.getText());
                         customer.setOrgBranch(frmMain.brn);
-                        customer.setPrefix(frmMain.prefix);
+                        
                         customer.setTitile(cboCTitle.getSelectedItem().toString());
                         customer.setUser(user);
                         customer.setBrn(txtCNIC.getText());
                         em.persist(customer);
+                        em.refresh(customer);
                     }
 
                     //adding the invoice
@@ -806,7 +832,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                     inv.setAdminHide(false);
                     inv.setCustomer(customer);
                     inv.setOrgBranch(frmMain.brn);
-                    inv.setPrefix(frmMain.prefix);
+                    
 
                     inv.setTotalBillable(Double.parseDouble(txtTotal.getText()));
                     inv.setTotalDisscount(Double.parseDouble(txtDisscount.getText()));
@@ -817,27 +843,30 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                     inv.setApprovedUser(appUser);
                     inv.setRecomendedUser(recuser);
                     inv.setUser(user);
-                    em.persist(inv);
+                    em.persist(inv); 
+//                    em.refresh(inv);
 
                     if (((ApplicationConstants) cboPaymentMethod.getSelectedItem()).getValue() == 0) {
                         //cash always goes to cash book
                         CashBook cb = new CashBook();
+
                         cb.setDebit(Double.parseDouble(txtTotal.getText()));
                         cb.setDescription("Cash invoice " + inv.getId());
                         cb.setOrgBranch(frmMain.brn);
-                        cb.setPrefix(frmMain.prefix);
+                        
                         cb.setUser(user);
                         em.persist(cb);
 
                     } else {
                         //if not cash then add to credit account of the customer
                         Accounts ac = new Accounts();
+                       
                         ac.setCredit(Double.parseDouble(txtTotal.getText()));
                         ac.setDescription(cboPaymentMethod.getSelectedItem().toString() + " " + inv.getId());
                         ac.setEntity(customer);
                         ac.setEntityType(0);
                         ac.setOrgBranch(frmMain.brn);
-                        ac.setPrefix(frmMain.prefix);
+                        
                         ac.setUser(user);
                         em.persist(ac);
 
@@ -847,6 +876,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                     if (cboCNote.getSelectedIndex() > -1) {
                         CreditNote cn = (CreditNote) cboCNote.getSelectedItem();
                         cn.setCreditNoteStatus(new ApplicationConstants(13));
+                        em.persist(cn);
                     }
 
                     DefaultTableModel dTableModel = (DefaultTableModel) tblMain.getModel();
@@ -863,8 +893,8 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                         double dealerPrice = 0;
                         double aCostPrice = 0;
 
-                        if (serial.length() < 2) {
-                            grln = (GrnLines) dTableModel.getValueAt(i, 11);
+                        if (tblMain.getModel().getValueAt(i, 11) instanceof GrnLines) {
+                            grln = (GrnLines) tblMain.getModel().getValueAt(i, 11);
 
                             prdToUpdate = grln.getPcode();
 
@@ -892,7 +922,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                         invl.setDealerPrice(dealerPrice);
                         invl.setEndUserPrice(endUserPrice);
                         invl.setInvoice(inv);
-                        invl.setPrefix(frmMain.prefix);
+
                         invl.setProduct(prdToUpdate);
                         invl.setQty(qty);
                         invl.setSellingPrice(sellingPrice);
@@ -904,32 +934,35 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
                         em.persist(invl);
 
                         //update product table qih. it shold be hancle in db side so just use a query to update
-                        Query createQuery = em.createQuery("UPDATE Product p SET p.qih = p.qih - :sold");
-                        createQuery.setParameter("sold", qty);
-                        createQuery.executeUpdate();
+                        Query createQuery1 = em.createQuery("UPDATE Product p SET p.qih = p.qih - :sold");
+                        createQuery1.setParameter("sold", qty);
+                        createQuery1.executeUpdate();
 
                         //add to product bin card
-                        ProductBinCard bin = new ProductBinCard();
-                        bin.setDescription("sold to " + inv.getId());
-                        bin.setOrgBranch(frmMain.brn);
-                        bin.setOut(qty);
-                        bin.setPrefix(frmMain.prefix);
-                        bin.setProduct(prdToUpdate);
-                        bin.setSerial(grln);
-                        bin.setUser(user);
-                        em.persist(bin);
+                     //   ProductBinCard bin = new ProductBinCard("1");
+                      //  bin.setDatetime(new java.sql.Date(new Date().getTime()));
+                       // bin.setDescription("sold to ");
+                       // bin.setOrgBranch(frmMain.brn);
+                       // bin.setOut(qty);
+                       // bin.setIn(0);
+                        //bin.setPrefix(frmMain.prefix);
+                        //bin.setProduct(prdToUpdate);
+                       // bin.setSerial(grln);
+                        //bin.setUser(user);
+                        //em.persist(bin);
 
                     }
-
+                   
                     em.getTransaction().commit();
 
                     // call from print from here
                 } catch (Exception e) {
                     em.getTransaction().rollback();
+                    e.printStackTrace();
                 }
+            } else {
+                JOptionPane.showMessageDialog(this, "Incorrect user name or password");
             }
-        } else {
-            JOptionPane.showConfirmDialog(this, "Incorrect user name or password");
         }
 
 
@@ -992,7 +1025,9 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
             int qty = dTableModel.getValueAt(tblMain.getSelectedRow(), 3) != null ? (int) dTableModel.getValueAt(tblMain.getSelectedRow(), 3) : 0;
             double price = dTableModel.getValueAt(tblMain.getSelectedRow(), 7) != null ? (double) dTableModel.getValueAt(tblMain.getSelectedRow(), 7) : 0;
             double total = qty * price;
+            tblMain.getModel().removeTableModelListener(this);
             dTableModel.setValueAt(total, tblMain.getSelectedRow(), 9);
+            tblMain.getModel().addTableModelListener(this);
         }
         tblMain.getModel().addTableModelListener(this);
         calculateTotal();
@@ -1015,7 +1050,7 @@ public class frmIInvoice extends javax.swing.JInternalFrame implements TableMode
         try {
             disscount = Double.parseDouble(txtDisscount.getText());
         } catch (Exception e) {
-            e.printStackTrace();
+            //this is just check so not doing anything
         }
 
         txtTotal.setText(Utills.formatDecimal(total - disscount - creditNoteAmount));

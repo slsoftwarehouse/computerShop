@@ -11,6 +11,9 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -43,15 +46,15 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "Entity.findByBrn", query = "SELECT e FROM Entity e WHERE e.brn = :brn"),
     @NamedQuery(name = "Entity.findByCreditLimit", query = "SELECT e FROM Entity e WHERE e.creditLimit = :creditLimit"),
     @NamedQuery(name = "Entity.findByAddress", query = "SELECT e FROM Entity e WHERE e.address = :address"),
-    @NamedQuery(name = "Entity.findByDatetime", query = "SELECT e FROM Entity e WHERE e.datetime = :datetime"),
-    @NamedQuery(name = "Entity.findByPrefix", query = "SELECT e FROM Entity e WHERE e.prefix = :prefix")})
+    @NamedQuery(name = "Entity.findByDatetime", query = "SELECT e FROM Entity e WHERE e.datetime = :datetime")})
 public class Entity implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "entity_type")
     private Integer entityType;
     @Column(name = "titile")
@@ -76,45 +79,43 @@ public class Entity implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "supplier", fetch = FetchType.LAZY)
     private List<SupplierProduct> supplierProductList;
-    @OneToMany(mappedBy = "supplier")
+    @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY)
     private List<GrnReturn> grnReturnList;
-    @OneToMany(mappedBy = "entity")
+    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
     private List<CreditNote> creditNoteList;
-    @OneToMany(mappedBy = "supplier")
+    @OneToMany(mappedBy = "supplier", fetch = FetchType.LAZY)
     private List<Grn> grnList;
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Jobs> jobsList;
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Sample> sampleList;
-    @OneToMany(mappedBy = "entity")
+    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
     private List<Cheques> chequesList;
-    @OneToMany(mappedBy = "entity")
+    @OneToMany(mappedBy = "entity", fetch = FetchType.LAZY)
     private List<Accounts> accountsList;
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", fetch = FetchType.LAZY)
     private List<Invoice> invoiceList;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Entity() {
     }
 
-    public Entity(String id) {
+    public Entity(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -204,14 +205,6 @@ public class Entity implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     @XmlTransient
@@ -333,7 +326,7 @@ public class Entity implements Serializable {
 
     @Override
     public String toString() {
-        return name;
+        return "com.cs.dao.Entity[ id=" + id + " ]";
     }
     
 }

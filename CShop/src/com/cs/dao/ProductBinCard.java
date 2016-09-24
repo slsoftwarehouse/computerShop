@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -33,15 +36,15 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "ProductBinCard.findByDescription", query = "SELECT p FROM ProductBinCard p WHERE p.description = :description"),
     @NamedQuery(name = "ProductBinCard.findByIn", query = "SELECT p FROM ProductBinCard p WHERE p.in = :in"),
     @NamedQuery(name = "ProductBinCard.findByOut", query = "SELECT p FROM ProductBinCard p WHERE p.out = :out"),
-    @NamedQuery(name = "ProductBinCard.findByDatetime", query = "SELECT p FROM ProductBinCard p WHERE p.datetime = :datetime"),
-    @NamedQuery(name = "ProductBinCard.findByPrefix", query = "SELECT p FROM ProductBinCard p WHERE p.prefix = :prefix")})
+    @NamedQuery(name = "ProductBinCard.findByDatetime", query = "SELECT p FROM ProductBinCard p WHERE p.datetime = :datetime")})
 public class ProductBinCard implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "description")
     private String description;
     @Column(name = "in")
@@ -51,33 +54,31 @@ public class ProductBinCard implements Serializable {
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
     @JoinColumn(name = "product", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
     @JoinColumn(name = "serial", referencedColumnName = "serial")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private GrnLines serial;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public ProductBinCard() {
     }
 
-    public ProductBinCard(String id) {
+    public ProductBinCard(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -111,14 +112,6 @@ public class ProductBinCard implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public Branch getOrgBranch() {

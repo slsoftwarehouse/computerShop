@@ -11,6 +11,9 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -33,47 +36,45 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
     @NamedQuery(name = "Sample.findAll", query = "SELECT s FROM Sample s"),
     @NamedQuery(name = "Sample.findById", query = "SELECT s FROM Sample s WHERE s.id = :id"),
-    @NamedQuery(name = "Sample.findByDatetime", query = "SELECT s FROM Sample s WHERE s.datetime = :datetime"),
-    @NamedQuery(name = "Sample.findByPrefix", query = "SELECT s FROM Sample s WHERE s.prefix = :prefix")})
+    @NamedQuery(name = "Sample.findByDatetime", query = "SELECT s FROM Sample s WHERE s.datetime = :datetime")})
 public class Sample implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
-    @OneToMany(mappedBy = "sample")
+    @OneToMany(mappedBy = "sample", fetch = FetchType.LAZY)
     private List<SampleLines> sampleLinesList;
-    @JoinColumn(name = "customer", referencedColumnName = "id")
-    @ManyToOne
-    private com.cs.dao.Entity customer;
     @JoinColumn(name = "status", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private ApplicationConstants status;
     @JoinColumn(name = "org_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch orgBranch;
+    @JoinColumn(name = "customer", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private com.cs.dao.Entity customer;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public Sample() {
     }
 
-    public Sample(String id) {
+    public Sample(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -85,14 +86,6 @@ public class Sample implements Serializable {
         this.datetime = datetime;
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
     @XmlTransient
     public List<SampleLines> getSampleLinesList() {
         return sampleLinesList;
@@ -100,14 +93,6 @@ public class Sample implements Serializable {
 
     public void setSampleLinesList(List<SampleLines> sampleLinesList) {
         this.sampleLinesList = sampleLinesList;
-    }
-
-    public com.cs.dao.Entity getCustomer() {
-        return customer;
-    }
-
-    public void setCustomer(com.cs.dao.Entity customer) {
-        this.customer = customer;
     }
 
     public ApplicationConstants getStatus() {
@@ -124,6 +109,14 @@ public class Sample implements Serializable {
 
     public void setOrgBranch(Branch orgBranch) {
         this.orgBranch = orgBranch;
+    }
+
+    public com.cs.dao.Entity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(com.cs.dao.Entity customer) {
+        this.customer = customer;
     }
 
     public Users getUser() {

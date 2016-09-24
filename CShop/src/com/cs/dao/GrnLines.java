@@ -11,6 +11,9 @@ import java.util.List;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -43,15 +46,15 @@ import javax.xml.bind.annotation.XmlTransient;
     @NamedQuery(name = "GrnLines.findByWarrantyenddate", query = "SELECT g FROM GrnLines g WHERE g.warrantyenddate = :warrantyenddate"),
     @NamedQuery(name = "GrnLines.findByIsDamage", query = "SELECT g FROM GrnLines g WHERE g.isDamage = :isDamage"),
     @NamedQuery(name = "GrnLines.findByDamageUpdatedUser", query = "SELECT g FROM GrnLines g WHERE g.damageUpdatedUser = :damageUpdatedUser"),
-    @NamedQuery(name = "GrnLines.findByDatetime", query = "SELECT g FROM GrnLines g WHERE g.datetime = :datetime"),
-    @NamedQuery(name = "GrnLines.findByPrefix", query = "SELECT g FROM GrnLines g WHERE g.prefix = :prefix")})
+    @NamedQuery(name = "GrnLines.findByDatetime", query = "SELECT g FROM GrnLines g WHERE g.datetime = :datetime")})
 public class GrnLines implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "serial")
     private String serial;
     @Column(name = "qty")
@@ -73,56 +76,54 @@ public class GrnLines implements Serializable {
     @Column(name = "isDamage")
     private Boolean isDamage;
     @Column(name = "damage_updated_user")
-    private String damageUpdatedUser;
+    private Integer damageUpdatedUser;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
-    @OneToMany(mappedBy = "serial")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<SampleLines> sampleLinesList;
     @JoinColumn(name = "pcode", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Product pcode;
     @JoinColumn(name = "branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch branch;
     @JoinColumn(name = "grn", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Grn grn;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
     @JoinColumn(name = "user_sales", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users userSales;
-    @OneToMany(mappedBy = "serial")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<BranchTransferLines> branchTransferLinesList;
-    @OneToMany(mappedBy = "serial")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<JobsLines> jobsLinesList;
-    @OneToMany(mappedBy = "serial")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<GrnReturnLines> grnReturnLinesList;
-    @OneToMany(mappedBy = "serial")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<ProductBinCard> productBinCardList;
-    @OneToMany(mappedBy = "serial")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<InvoiceLines> invoiceLinesList;
-    @OneToMany(mappedBy = "backupSerial")
+    @OneToMany(mappedBy = "backupSerial", fetch = FetchType.LAZY)
     private List<Warrranty> warrrantyList;
-    @OneToMany(mappedBy = "serial")
+    @OneToMany(mappedBy = "serial", fetch = FetchType.LAZY)
     private List<Warrranty> warrrantyList1;
 
     public GrnLines() {
     }
 
-    public GrnLines(String id) {
+    public GrnLines(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -198,11 +199,11 @@ public class GrnLines implements Serializable {
         this.isDamage = isDamage;
     }
 
-    public String getDamageUpdatedUser() {
+    public Integer getDamageUpdatedUser() {
         return damageUpdatedUser;
     }
 
-    public void setDamageUpdatedUser(String damageUpdatedUser) {
+    public void setDamageUpdatedUser(Integer damageUpdatedUser) {
         this.damageUpdatedUser = damageUpdatedUser;
     }
 
@@ -212,14 +213,6 @@ public class GrnLines implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     @XmlTransient

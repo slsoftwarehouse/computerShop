@@ -10,6 +10,9 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -31,44 +34,42 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "BranchTransfer.findAll", query = "SELECT b FROM BranchTransfer b"),
     @NamedQuery(name = "BranchTransfer.findById", query = "SELECT b FROM BranchTransfer b WHERE b.id = :id"),
     @NamedQuery(name = "BranchTransfer.findByTotalItems", query = "SELECT b FROM BranchTransfer b WHERE b.totalItems = :totalItems"),
-    @NamedQuery(name = "BranchTransfer.findByDatetime", query = "SELECT b FROM BranchTransfer b WHERE b.datetime = :datetime"),
-    @NamedQuery(name = "BranchTransfer.findByPrefix", query = "SELECT b FROM BranchTransfer b WHERE b.prefix = :prefix")})
+    @NamedQuery(name = "BranchTransfer.findByDatetime", query = "SELECT b FROM BranchTransfer b WHERE b.datetime = :datetime")})
 public class BranchTransfer implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
-    private String id;
+    private Integer id;
     @Column(name = "total_items")
     private Integer totalItems;
     @Column(name = "datetime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date datetime;
-    @Column(name = "prefix")
-    private String prefix;
     @JoinColumn(name = "accepted_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch acceptedBranch;
     @JoinColumn(name = "transfered_branch", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Branch transferedBranch;
     @JoinColumn(name = "user", referencedColumnName = "id")
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Users user;
 
     public BranchTransfer() {
     }
 
-    public BranchTransfer(String id) {
+    public BranchTransfer(Integer id) {
         this.id = id;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -86,14 +87,6 @@ public class BranchTransfer implements Serializable {
 
     public void setDatetime(Date datetime) {
         this.datetime = datetime;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
     }
 
     public Branch getAcceptedBranch() {
